@@ -3,92 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retirar Senha</title>
+    <title>Entrar na Fila</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background-color: #f0f2f5; color: #333; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        h1 { margin-bottom: 20px; color: #0056b3; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { background-color: #0056b3; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
-        button:hover { background-color: #004494; }
-        #senha-gerada { display: none; margin-top: 20px; padding: 20px; background: #e3f2fd; border: 2px solid #0056b3; border-radius: 10px; }
-        .numero-zao { font-size: 60px; font-weight: bold; color: #0056b3; margin: 10px 0; }
-        .rodape { margin-top: 30px; font-size: 12px; color: #888; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { background: white; width: 100%; max-width: 450px; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        p { text-align: center; color: #64748b; margin-bottom: 2rem; }
+        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
+        input, select { width: 100%; padding: 0.75rem; margin-bottom: 1.25rem; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 1rem; box-sizing: border-box; transition: border 0.3s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); ring: 2px solid #bfdbfe; }
+        button { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+        button:active { transform: scale(0.98); }
+        #senha-gerada { display: none; text-align: center; animation: fadeIn 0.5s ease; }
+        .numero-senha { font-size: 4rem; font-weight: 900; color: var(--primary); letter-spacing: -2px; margin: 1rem 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>🎟️ Atendimento Escolar</h1>
+        <div class="logo"><span>📍</span> Fila Cord</div>
+        
         <div id="formulario">
-            <p>Preencha seus dados para entrar na fila.</p>
-            <input type="text" id="nome" placeholder="Nome Completo" required>
-            <input type="text" id="matricula" placeholder="Matrícula" required>
-            <button onclick="gerarSenha()">ENTRAR NA FILA</button>
+            <p>Preencha os dados para gerar sua senha de atendimento.</p>
+            
+            <label>Nome Completo</label>
+            <input type="text" id="nome" placeholder="Ex: João Silva">
+            
+            <label>Matrícula</label>
+            <input type="text" id="matricula" placeholder="Digite sua matrícula">
+            
+            <label>Curso</label>
+            <select id="curso">
+                <option value="">Selecione seu curso</option>
+                <option>Psicologia</option><option>Medicina</option><option>Direito</option>
+                <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
+                <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
+                <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
+            </select>
+            
+            <button onclick="gerarSenha()">Gerar Minha Senha</button>
         </div>
 
         <div id="senha-gerada">
-            <h2>Sua Senha</h2>
-            <div id="numero-senha" class="numero-zao">---</div>
-            <p>Por favor, aguarde ser chamado no painel.</p>
+            <div style="font-size: 3rem;">✅</div>
+            <h2 style="margin-bottom: 0;">Sua Senha</h2>
+            <div id="numero-senha" class="numero-senha">---</div>
+            <p>Aguarde ser chamado pelo seu nome ou senha no painel principal.</p>
         </div>
     </div>
-    <div class="rodape">Sistema Fila Cord</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO DO SEU PROJETO (JÁ INSERIDA)
         const firebaseConfig = {
-          apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
-          authDomain: "fila-cord.firebaseapp.com",
-          projectId: "fila-cord",
-          storageBucket: "fila-cord.firebasestorage.app",
-          messagingSenderId: "249621709749",
-          appId: "1:249621709749:web:18b6486f2095f95f29cffc"
+            apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
+            authDomain: "fila-cord.firebaseapp.com",
+            projectId: "fila-cord",
+            storageBucket: "fila-cord.firebasestorage.app",
+            messagingSenderId: "249621709749",
+            appId: "1:249621709749:web:18b6486f2095f95f29cffc"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Função para gerar senha
         window.gerarSenha = async function() {
             const nome = document.getElementById('nome').value;
             const matricula = document.getElementById('matricula').value;
+            const curso = document.getElementById('curso').value;
 
-            if(!nome || !matricula) return alert("Por favor, preencha todos os campos!");
+            if(!nome || !matricula || !curso) return alert("Por favor, preencha tudo!");
 
-            // Gera senha baseada na hora (Ex: A1430)
             const agora = new Date();
-            const hora = String(agora.getHours()).padStart(2, '0');
-            const min = String(agora.getMinutes()).padStart(2, '0');
-            const seg = String(agora.getSeconds()).padStart(2, '0');
-            const senha = `A${hora}${min}${seg}`;
-
-            const btn = document.querySelector('button');
-            btn.innerText = "Gerando...";
-            btn.disabled = true;
+            const senha = "S" + String(agora.getMinutes()).padStart(2,'0') + String(agora.getSeconds()).padStart(2,'0');
 
             try {
-                // Salva no Firestore
                 await addDoc(collection(db, "fila"), {
-                    nome: nome,
-                    matricula: matricula,
-                    senha: senha,
+                    nome, matricula, curso, senha,
                     status: "AGUARDANDO",
                     hora: serverTimestamp()
                 });
 
-                // Mostra a senha na tela
                 document.getElementById('formulario').style.display = 'none';
                 document.getElementById('senha-gerada').style.display = 'block';
                 document.getElementById('numero-senha').innerText = senha;
-                
-            } catch (e) {
-                alert("Erro ao conectar: " + e.message);
-                btn.innerText = "Tentar Novamente";
-                btn.disabled = false;
-            }
+            } catch (e) { alert("Erro: " + e.message); }
         }
     </script>
 </body>
