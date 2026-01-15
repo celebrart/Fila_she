@@ -3,57 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Fila</title>
+    <title>Admin - Fila Cord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --success: #22c55e; --danger: #ef4444; }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: #f1f5f9; color: #334155; }
-        header { background: white; padding: 1rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .stat-card h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; color: #64748b; }
-        .stat-card div { font-size: 1.5rem; font-weight: bold; }
-
-        .fila-grid { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .fila-header { background: #f8fafc; padding: 1rem; display: grid; grid-template-columns: 100px 1fr 1fr 200px; font-weight: bold; border-bottom: 1px solid #e2e8f0; }
-        .fila-row { padding: 1rem; display: grid; grid-template-columns: 100px 1fr 1fr 200px; align-items: center; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
-        .fila-row:hover { background: #f8fafc; }
-        .fila-row.chamando { background: #f0fdf4; border-left: 4px solid var(--success); }
-
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .badge-espera { background: #fff7ed; color: #9a3412; }
-        .badge-chamando { background: #dcfce7; color: #166534; }
-
-        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-call { background: var(--primary); color: white; margin-right: 5px; }
-        .btn-done { background: #e2e8f0; color: #475569; }
-        .btn:hover { opacity: 0.8; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; margin: 0; display: flex; }
+        aside { width: 280px; background: #ffffff; height: 100vh; border-right: 1px solid #e2e8f0; padding: 2rem; box-sizing: border-box; }
+        main { flex: 1; padding: 2rem; overflow-y: auto; }
+        .card-aluno { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .status-pulse { width: 10px; height: 10px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .btn-chamar { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .btn-finalizar { background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; cursor: pointer; margin-left: 8px; }
+        select#filtro { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 1rem; }
     </style>
 </head>
 <body>
-    <header>
-        <h2 style="margin:0; color:var(--primary)">📍 Fila Cord Admin</h2>
-        <div id="clock" style="font-weight: 500;"></div>
-    </header>
-
-    <div class="container">
-        <div class="stats">
-            <div class="stat-card"><h3>Aguardando</h3><div id="count-total">0</div></div>
-            <div class="stat-card" style="border-color: var(--success)"><h3>Última Chamada</h3><div id="last-called">--</div></div>
+    <aside>
+        <h2 style="color:#4f46e5">Fila Cord</h2>
+        <p style="color:#64748b; font-size: 0.9rem;">Painel do Atendente</p>
+        <hr style="border:0; border-top:1px solid #f1f5f9; margin: 1.5rem 0;">
+        <label>Filtrar por Curso:</label>
+        <select id="filtro" onchange="renderizarFila()">
+            <option value="Todos">Todos os Cursos</option>
+            <option>Psicologia</option><option>Medicina</option><option>Direito</option>
+            <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
+            <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
+            <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
+        </select>
+        <div style="margin-top:2rem">
+            <small style="color:#94a3b8">Total na fila:</small>
+            <div id="total" style="font-size:2rem; font-weight:800">0</div>
         </div>
+    </aside>
 
-        <div class="fila-grid">
-            <div class="fila-header">
-                <div>SENHA</div><div>ALUNO / CURSO</div><div>MATRÍCULA</div><div>AÇÕES</div>
-            </div>
-            <div id="corpo-fila">
-                </div>
-        </div>
-    </div>
+    <main>
+        <div id="lista"></div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
@@ -66,54 +55,54 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let dadosFila = [];
 
-        const q = query(collection(db, "fila"), orderBy("hora", "asc"));
-        
-        onSnapshot(q, (snapshot) => {
-            const corpo = document.getElementById("corpo-fila");
-            document.getElementById("count-total").innerText = snapshot.size;
-            corpo.innerHTML = ""; 
-
-            snapshot.forEach((docSnap) => {
-                const item = docSnap.data();
-                const id = docSnap.id;
-                const isChamando = item.status === 'CHAMANDO';
-
-                if(isChamando) document.getElementById("last-called").innerText = item.senha;
-
-                const row = document.createElement("div");
-                row.className = `fila-row ${isChamando ? 'chamando' : ''}`;
-                row.innerHTML = `
-                    <div style="font-weight:bold; font-size:1.2rem">${item.senha}</div>
-                    <div>
-                        <div style="font-weight:600">${item.nome}</div>
-                        <div style="font-size:0.8rem; color:#64748b">${item.curso}</div>
-                    </div>
-                    <div style="color:#64748b">${item.matricula}</div>
-                    <div>
-                        <button class="btn btn-call" onclick="window.chamar('${id}', '${item.nome}')">CHAMAR</button>
-                        <button class="btn btn-done" onclick="window.finalizar('${id}')">OK</button>
-                    </div>
-                `;
-                corpo.appendChild(row);
-            });
+        onSnapshot(query(collection(db, "fila"), orderBy("hora", "asc")), (snap) => {
+            dadosFila = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderizarFila();
         });
 
-        window.chamar = async (id, nome) => {
-            await updateDoc(doc(db, "fila", id), { status: 'CHAMANDO' });
-            // Síntese de voz opcional:
-            const msg = new SpeechSynthesisUtterance("Próximo aluno: " + nome);
-            window.speechSynthesis.speak(msg);
+        window.renderizarFila = () => {
+            const lista = document.getElementById('lista');
+            const filtro = document.getElementById('filtro').value;
+            const filteredData = filtro === "Todos" ? dadosFila : dadosFila.filter(a => a.curso === filtro);
+            
+            document.getElementById('total').innerText = filteredData.length;
+            lista.innerHTML = filteredData.map(a => `
+                <div class="card-aluno">
+                    <div>
+                        <div style="font-size:1.2rem; font-weight:700">${a.senha} - ${a.nome}</div>
+                        <div style="color:#64748b">${a.curso}</div>
+                    </div>
+                    <div>
+                        <button class="btn-chamar" onclick="chamar('${a.id}', '${a.nome}')">CHAMAR</button>
+                        <button class="btn-finalizar" onclick="finalizar('${a.id}')">✖</button>
+                    </div>
+                </div>
+            `).join('');
         };
 
-        window.finalizar = async (id) => {
-            await deleteDoc(doc(db, "fila", id));
+        window.chamar = (id, nome) => {
+            // Ding Dong Sonoro (Navegador)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+
+            // Fala o nome
+            setTimeout(() => {
+                const msg = new SpeechSynthesisUtterance(`Próximo atendimento, ${nome}`);
+                msg.lang = 'pt-BR';
+                window.speechSynthesis.speak(msg);
+            }, 600);
         };
 
-        // Relógio simples
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
+        window.finalizar = async (id) => { if(confirm("Concluir?")) await deleteDoc(doc(db, "fila", id)); };
     </script>
 </body>
 </html>
