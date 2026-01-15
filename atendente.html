@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Atendente</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #e9ecef; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 15px; color: #333; }
+        
+        .fila-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding: 20px 0; transition: background 0.2s; }
+        .fila-item:hover { background-color: #f9f9f9; }
+        
+        .senha-box { text-align: center; min-width: 100px; }
+        .senha { font-size: 28px; font-weight: bold; color: #0056b3; }
+        .status-badge { font-size: 12px; background: #eee; padding: 4px 8px; border-radius: 4px; color: #555; }
+        
+        .info { flex-grow: 1; margin-left: 20px; }
+        .nome-aluno { font-size: 18px; font-weight: 600; color: #333; }
+        
+        .acoes { display: flex; gap: 10px; }
+        button { border: none; padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; color: white; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        
+        .btn-chamar { background: #28a745; }
+        .btn-finalizar { background: #6c757d; }
+        
+        /* Estilo visual quando está chamando */
+        .chamando { background-color: #d1e7dd !important; border-left: 5px solid #198754; padding-left: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1>📋 Fila de Atendimento</h1>
+            <div style="color:green">● Sistema Online</div>
+        </div>
+        
+        <div id="lista-fila">
+            <p style="text-align:center; padding: 20px; color:#777;">Carregando fila...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIGURAÇÃO DO SEU PROJETO (JÁ INSERIDA)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
+          authDomain: "fila-cord.firebaseapp.com",
+          projectId: "fila-cord",
+          storageBucket: "fila-cord.firebasestorage.app",
+          messagingSenderId: "249621709749",
+          appId: "1:249621709749:web:18b6486f2095f95f29cffc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Query: Ordenar por hora de chegada
+        const q = query(collection(db, "fila"), orderBy("hora", "asc"));
+        
+        // Escuta Real-Time
+        onSnapshot(q, (snapshot) => {
+            const lista = document.getElementById("lista-fila");
+            lista.innerHTML = ""; 
+
+            if (snapshot.empty) {
+                lista.innerHTML = "<p style='text-align:center; padding: 30px; color:#999;'>Nenhum aluno aguardando no momento.</p>";
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const aluno = docSnap.data();
+                const id = docSnap.id;
+                
+                const div = document.createElement("div");
+                // Adiciona classe visual se estiver sendo chamado
+                div.className = `fila-item ${aluno.status === 'CHAMANDO' ? 'chamando' : ''}`;
+                
+                div.innerHTML = `
+                    <div class="senha-box">
+                        <div class="senha">${aluno.senha}</div>
+                        <span class="status-badge">${aluno.status}</span>
+                    </div>
+                    <div class="info">
+                        <div class="nome-aluno">${aluno.nome}</div>
+                        <div style="color:#666; font-size:14px;">Matrícula: ${aluno.matricula}</div>
+                    </div>
+                    <div class="acoes">
+                        <button class="btn-chamar" onclick="window.atualizarStatus('${id}', 'CHAMANDO')">
+                           🔊 Chamar
+                        </button>
+                        <button class="btn-finalizar" onclick="window.deletar('${id}')">
+                           ✅ Finalizar
+                        </button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        });
+
+        // Funções Globais
+        window.atualizarStatus = async (id, status) => {
+            try {
+                await updateDoc(doc(db, "fila", id), { status: status });
+                // Aqui você poderia adicionar um som de 'ding-dong' se quisesse
+            } catch(e) { console.error(e); }
+        };
+
+        window.deletar = async (id) => {
+            if(confirm("Confirmar que o aluno foi atendido?")) {
+                await deleteDoc(doc(db, "fila", id));
+            }
+        };
+    </script>
+</body>
+</html>
+
