@@ -3,42 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Atendente</title>
+    <title>Painel Administrativo - Fila</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #e9ecef; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1 { border-bottom: 2px solid #eee; padding-bottom: 15px; color: #333; }
-        
-        .fila-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding: 20px 0; transition: background 0.2s; }
-        .fila-item:hover { background-color: #f9f9f9; }
-        
-        .senha-box { text-align: center; min-width: 100px; }
-        .senha { font-size: 28px; font-weight: bold; color: #0056b3; }
-        .status-badge { font-size: 12px; background: #eee; padding: 4px 8px; border-radius: 4px; color: #555; }
-        
-        .info { flex-grow: 1; margin-left: 20px; }
-        .nome-aluno { font-size: 18px; font-weight: 600; color: #333; }
-        
-        .acoes { display: flex; gap: 10px; }
-        button { border: none; padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; color: white; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        
-        .btn-chamar { background: #28a745; }
-        .btn-finalizar { background: #6c757d; }
-        
-        /* Estilo visual quando está chamando */
-        .chamando { background-color: #d1e7dd !important; border-left: 5px solid #198754; padding-left: 15px; }
+        :root { --primary: #2563eb; --success: #22c55e; --danger: #ef4444; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: #f1f5f9; color: #334155; }
+        header { background: white; padding: 1rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .stat-card h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; color: #64748b; }
+        .stat-card div { font-size: 1.5rem; font-weight: bold; }
+
+        .fila-grid { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .fila-header { background: #f8fafc; padding: 1rem; display: grid; grid-template-columns: 100px 1fr 1fr 200px; font-weight: bold; border-bottom: 1px solid #e2e8f0; }
+        .fila-row { padding: 1rem; display: grid; grid-template-columns: 100px 1fr 1fr 200px; align-items: center; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
+        .fila-row:hover { background: #f8fafc; }
+        .fila-row.chamando { background: #f0fdf4; border-left: 4px solid var(--success); }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .badge-espera { background: #fff7ed; color: #9a3412; }
+        .badge-chamando { background: #dcfce7; color: #166534; }
+
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-call { background: var(--primary); color: white; margin-right: 5px; }
+        .btn-done { background: #e2e8f0; color: #475569; }
+        .btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
+    <header>
+        <h2 style="margin:0; color:var(--primary)">📍 Fila Cord Admin</h2>
+        <div id="clock" style="font-weight: 500;"></div>
+    </header>
+
     <div class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h1>📋 Fila de Atendimento</h1>
-            <div style="color:green">● Sistema Online</div>
+        <div class="stats">
+            <div class="stat-card"><h3>Aguardando</h3><div id="count-total">0</div></div>
+            <div class="stat-card" style="border-color: var(--success)"><h3>Última Chamada</h3><div id="last-called">--</div></div>
         </div>
-        
-        <div id="lista-fila">
-            <p style="text-align:center; padding: 20px; color:#777;">Carregando fila...</p>
+
+        <div class="fila-grid">
+            <div class="fila-header">
+                <div>SENHA</div><div>ALUNO / CURSO</div><div>MATRÍCULA</div><div>AÇÕES</div>
+            </div>
+            <div id="corpo-fila">
+                </div>
         </div>
     </div>
 
@@ -46,76 +55,65 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO DO SEU PROJETO (JÁ INSERIDA)
         const firebaseConfig = {
-          apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
-          authDomain: "fila-cord.firebaseapp.com",
-          projectId: "fila-cord",
-          storageBucket: "fila-cord.firebasestorage.app",
-          messagingSenderId: "249621709749",
-          appId: "1:249621709749:web:18b6486f2095f95f29cffc"
+            apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
+            authDomain: "fila-cord.firebaseapp.com",
+            projectId: "fila-cord",
+            storageBucket: "fila-cord.firebasestorage.app",
+            messagingSenderId: "249621709749",
+            appId: "1:249621709749:web:18b6486f2095f95f29cffc"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Query: Ordenar por hora de chegada
         const q = query(collection(db, "fila"), orderBy("hora", "asc"));
         
-        // Escuta Real-Time
         onSnapshot(q, (snapshot) => {
-            const lista = document.getElementById("lista-fila");
-            lista.innerHTML = ""; 
-
-            if (snapshot.empty) {
-                lista.innerHTML = "<p style='text-align:center; padding: 30px; color:#999;'>Nenhum aluno aguardando no momento.</p>";
-                return;
-            }
+            const corpo = document.getElementById("corpo-fila");
+            document.getElementById("count-total").innerText = snapshot.size;
+            corpo.innerHTML = ""; 
 
             snapshot.forEach((docSnap) => {
-                const aluno = docSnap.data();
+                const item = docSnap.data();
                 const id = docSnap.id;
-                
-                const div = document.createElement("div");
-                // Adiciona classe visual se estiver sendo chamado
-                div.className = `fila-item ${aluno.status === 'CHAMANDO' ? 'chamando' : ''}`;
-                
-                div.innerHTML = `
-                    <div class="senha-box">
-                        <div class="senha">${aluno.senha}</div>
-                        <span class="status-badge">${aluno.status}</span>
+                const isChamando = item.status === 'CHAMANDO';
+
+                if(isChamando) document.getElementById("last-called").innerText = item.senha;
+
+                const row = document.createElement("div");
+                row.className = `fila-row ${isChamando ? 'chamando' : ''}`;
+                row.innerHTML = `
+                    <div style="font-weight:bold; font-size:1.2rem">${item.senha}</div>
+                    <div>
+                        <div style="font-weight:600">${item.nome}</div>
+                        <div style="font-size:0.8rem; color:#64748b">${item.curso}</div>
                     </div>
-                    <div class="info">
-                        <div class="nome-aluno">${aluno.nome}</div>
-                        <div style="color:#666; font-size:14px;">Matrícula: ${aluno.matricula}</div>
-                    </div>
-                    <div class="acoes">
-                        <button class="btn-chamar" onclick="window.atualizarStatus('${id}', 'CHAMANDO')">
-                           🔊 Chamar
-                        </button>
-                        <button class="btn-finalizar" onclick="window.deletar('${id}')">
-                           ✅ Finalizar
-                        </button>
+                    <div style="color:#64748b">${item.matricula}</div>
+                    <div>
+                        <button class="btn btn-call" onclick="window.chamar('${id}', '${item.nome}')">CHAMAR</button>
+                        <button class="btn btn-done" onclick="window.finalizar('${id}')">OK</button>
                     </div>
                 `;
-                lista.appendChild(div);
+                corpo.appendChild(row);
             });
         });
 
-        // Funções Globais
-        window.atualizarStatus = async (id, status) => {
-            try {
-                await updateDoc(doc(db, "fila", id), { status: status });
-                // Aqui você poderia adicionar um som de 'ding-dong' se quisesse
-            } catch(e) { console.error(e); }
+        window.chamar = async (id, nome) => {
+            await updateDoc(doc(db, "fila", id), { status: 'CHAMANDO' });
+            // Síntese de voz opcional:
+            const msg = new SpeechSynthesisUtterance("Próximo aluno: " + nome);
+            window.speechSynthesis.speak(msg);
         };
 
-        window.deletar = async (id) => {
-            if(confirm("Confirmar que o aluno foi atendido?")) {
-                await deleteDoc(doc(db, "fila", id));
-            }
+        window.finalizar = async (id) => {
+            await deleteDoc(doc(db, "fila", id));
         };
+
+        // Relógio simples
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
     </script>
 </body>
 </html>
-
