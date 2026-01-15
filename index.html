@@ -3,37 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar na Fila</title>
+    <title>Check-in Atendimento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .card { background: white; width: 100%; max-width: 450px; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        p { text-align: center; color: #64748b; margin-bottom: 2rem; }
-        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
-        input, select { width: 100%; padding: 0.75rem; margin-bottom: 1.25rem; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 1rem; box-sizing: border-box; transition: border 0.3s; }
-        input:focus, select:focus { outline: none; border-color: var(--primary); ring: 2px solid #bfdbfe; }
-        button { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, background 0.2s; }
-        button:active { transform: scale(0.98); }
-        #senha-gerada { display: none; text-align: center; animation: fadeIn 0.5s ease; }
-        .numero-senha { font-size: 4rem; font-weight: 900; color: var(--primary); letter-spacing: -2px; margin: 1rem 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --p: #4f46e5; --bg: #0f172a; --card: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background: var(--card); width: 90%; max-width: 400px; padding: 2.5rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-size: 1.5rem; margin: 0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        input, select { width: 100%; padding: 14px; margin-bottom: 1rem; background: #334155; border: 1px solid #475569; border-radius: 12px; color: white; font-size: 1rem; box-sizing: border-box; }
+        button { width: 100%; padding: 16px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        #sucesso { display: none; text-align: center; }
+        .senha-box { font-size: 4rem; font-weight: 800; color: #818cf8; margin: 1.5rem 0; text-shadow: 0 0 20px rgba(129, 140, 248, 0.3); }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="logo"><span>📍</span> Fila Cord</div>
-        
-        <div id="formulario">
-            <p>Preencha os dados para gerar sua senha de atendimento.</p>
-            
-            <label>Nome Completo</label>
-            <input type="text" id="nome" placeholder="Ex: João Silva">
-            
-            <label>Matrícula</label>
-            <input type="text" id="matricula" placeholder="Digite sua matrícula">
-            
-            <label>Curso</label>
+        <div id="form-area">
+            <div class="header"><h1>Fila Cord Digital</h1><p style="color:#94a3b8">Identifique-se para começar</p></div>
+            <input type="text" id="nome" placeholder="Seu Nome">
+            <input type="text" id="matricula" placeholder="Matrícula">
             <select id="curso">
                 <option value="">Selecione seu curso</option>
                 <option>Psicologia</option><option>Medicina</option><option>Direito</option>
@@ -41,15 +31,13 @@
                 <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
                 <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
             </select>
-            
-            <button onclick="gerarSenha()">Gerar Minha Senha</button>
+            <button onclick="gerar()">GERAR SENHA</button>
         </div>
-
-        <div id="senha-gerada">
-            <div style="font-size: 3rem;">✅</div>
-            <h2 style="margin-bottom: 0;">Sua Senha</h2>
-            <div id="numero-senha" class="numero-senha">---</div>
-            <p>Aguarde ser chamado pelo seu nome ou senha no painel principal.</p>
+        <div id="sucesso">
+            <div style="font-size:3rem">✨</div>
+            <h2>Tudo pronto!</h2>
+            <div class="senha-box" id="disp-senha">---</div>
+            <p style="color:#94a3b8">Aguarde ser chamado no painel principal.</p>
         </div>
     </div>
 
@@ -69,27 +57,17 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.gerarSenha = async function() {
+        window.gerar = async () => {
             const nome = document.getElementById('nome').value;
-            const matricula = document.getElementById('matricula').value;
             const curso = document.getElementById('curso').value;
+            if(!nome || !curso) return alert("Preencha os campos!");
 
-            if(!nome || !matricula || !curso) return alert("Por favor, preencha tudo!");
-
-            const agora = new Date();
-            const senha = "S" + String(agora.getMinutes()).padStart(2,'0') + String(agora.getSeconds()).padStart(2,'0');
-
-            try {
-                await addDoc(collection(db, "fila"), {
-                    nome, matricula, curso, senha,
-                    status: "AGUARDANDO",
-                    hora: serverTimestamp()
-                });
-
-                document.getElementById('formulario').style.display = 'none';
-                document.getElementById('senha-gerada').style.display = 'block';
-                document.getElementById('numero-senha').innerText = senha;
-            } catch (e) { alert("Erro: " + e.message); }
+            const senha = "A" + Math.floor(100 + Math.random() * 900);
+            await addDoc(collection(db, "fila"), { nome, curso, senha, status: "ESPERA", hora: serverTimestamp() });
+            
+            document.getElementById('form-area').style.display = 'none';
+            document.getElementById('sucesso').style.display = 'block';
+            document.getElementById('disp-senha').innerText = senha;
         }
     </script>
 </body>
