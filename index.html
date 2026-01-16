@@ -1,74 +1,50 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-in Atendimento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --p: #4f46e5; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .card { background: var(--card); width: 90%; max-width: 400px; padding: 2.5rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
-        .header { text-align: center; margin-bottom: 2rem; }
-        .header h1 { font-size: 1.5rem; margin: 0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        input, select { width: 100%; padding: 14px; margin-bottom: 1rem; background: #334155; border: 1px solid #475569; border-radius: 12px; color: white; font-size: 1rem; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
-        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        #sucesso { display: none; text-align: center; }
-        .senha-box { font-size: 4rem; font-weight: 800; color: #818cf8; margin: 1.5rem 0; text-shadow: 0 0 20px rgba(129, 140, 248, 0.3); }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <div id="form-area">
-            <div class="header"><h1>Fila Cord Digital</h1><p style="color:#94a3b8">Identifique-se para começar</p></div>
-            <input type="text" id="nome" placeholder="Seu Nome">
-            <input type="text" id="matricula" placeholder="Matrícula">
-            <select id="curso">
-                <option value="">Selecione seu curso</option>
-                <option>Psicologia</option><option>Medicina</option><option>Direito</option>
-                <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
-                <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
-                <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
-            </select>
-            <button onclick="gerar()">GERAR SENHA</button>
-        </div>
-        <div id="sucesso">
-            <div style="font-size:3rem">✨</div>
-            <h2>Tudo pronto!</h2>
-            <div class="senha-box" id="disp-senha">---</div>
-            <p style="color:#94a3b8">Aguarde ser chamado no painel principal.</p>
-        </div>
+<div id="form-area">
+    <div class="header">
+        <h1>Fila Cord Digital</h1>
+        <p style="color:#94a3b8">Identifique-se para começar</p>
     </div>
+    <input type="text" id="nome" placeholder="Seu Nome Completo">
+    <input type="text" id="cpf" placeholder="CPF (000.000.000-00)" maxlength="14">
+    
+    <select id="curso">
+        <option value="">Selecione seu curso</option>
+        <option>Psicologia</option><option>Medicina</option><option>Direito</option>
+        <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
+        <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
+        <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
+    </select>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <textarea id="motivo" placeholder="Qual o motivo do atendimento?" 
+        style="width: 100%; padding: 14px; background: #334155; border: 1px solid #475569; border-radius: 12px; color: white; font-size: 1rem; margin-bottom: 1rem; font-family: inherit; resize: none; box-sizing: border-box;" 
+        rows="3"></textarea>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
-            authDomain: "fila-cord.firebaseapp.com",
-            projectId: "fila-cord",
-            storageBucket: "fila-cord.firebasestorage.app",
-            messagingSenderId: "249621709749",
-            appId: "1:249621709749:web:18b6486f2095f95f29cffc"
-        };
+    <button onclick="gerar()">GERAR SENHA</button>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+<script type="module">
+    // ... imports existentes ...
+    window.gerar = async () => {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const curso = document.getElementById('curso').value;
+        const motivo = document.getElementById('motivo').value;
 
-        window.gerar = async () => {
-            const nome = document.getElementById('nome').value;
-            const curso = document.getElementById('curso').value;
-            if(!nome || !curso) return alert("Preencha os campos!");
+        if(!nome || !cpf || !curso || !motivo) return alert("Por favor, preencha todos os campos!");
 
-            const senha = "A" + Math.floor(100 + Math.random() * 900);
-            await addDoc(collection(db, "fila"), { nome, curso, senha, status: "ESPERA", hora: serverTimestamp() });
-            
-            document.getElementById('form-area').style.display = 'none';
-            document.getElementById('sucesso').style.display = 'block';
-            document.getElementById('disp-senha').innerText = senha;
-        }
-    </script>
-</body>
-</html>
+        const senha = "A" + Math.floor(100 + Math.random() * 900);
+        
+        await addDoc(collection(db, "fila"), { 
+            nome, 
+            cpf, 
+            curso, 
+            motivo, 
+            senha, 
+            status: "ESPERA", 
+            hora: serverTimestamp() 
+        });
+        
+        document.getElementById('form-area').style.display = 'none';
+        document.getElementById('sucesso').style.display = 'block';
+        document.getElementById('disp-senha').innerText = senha;
+    }
+</script>
