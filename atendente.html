@@ -3,41 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Fila Cord</title>
+    <title>Painel de Gestão - Fila Cord</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; margin: 0; display: flex; }
-        aside { width: 280px; background: #ffffff; height: 100vh; border-right: 1px solid #e2e8f0; padding: 2rem; box-sizing: border-box; }
-        main { flex: 1; padding: 2rem; overflow-y: auto; }
-        .card-aluno { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        .status-pulse { width: 10px; height: 10px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .btn-chamar { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        .btn-finalizar { background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; cursor: pointer; margin-left: 8px; }
-        select#filtro { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 1rem; }
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; color: var(--text-main); }
+        
+        /* Sidebar Refinada */
+        aside { width: 300px; background: #fff; height: 100vh; border-right: 1px solid #e2e8f0; padding: 2rem; position: sticky; top: 0; }
+        
+        /* Main Area */
+        main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+        
+        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+
+        /* Grid de Cards */
+        .grid-fila { display: grid; gap: 1rem; }
+
+        .card-aluno { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 1.5rem; 
+            display: flex; 
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            border: 2px solid transparent; 
+            transition: all 0.3s ease;
+        }
+
+        /* Destaque quando chamando */
+        .card-aluno.status-chamando { 
+            border-color: var(--success); 
+            background: #f0fdf4;
+            transform: scale(1.02);
+        }
+
+        .info-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .senha-tag { background: #eef2ff; color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 800; font-size: 1.2rem; }
+        
+        .aluno-detalhes h3 { margin: 0; font-size: 1.1rem; }
+        .aluno-detalhes p { margin: 4px 0; color: #64748b; font-size: 0.9rem; }
+
+        .motivo-box { background: #f1f5f9; padding: 12px; border-radius: 8px; font-style: italic; font-size: 0.9rem; border-left: 4px solid #cbd5e1; }
+
+        .actions { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; pt: 1rem; padding-top: 1rem; }
+        
+        .btn { border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; flex: 1; }
+        .btn-chamar { background: var(--primary); color: white; }
+        .btn-finalizar { background: #ef4444; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; margin-top: 8px; }
     </style>
 </head>
 <body>
     <aside>
-        <h2 style="color:#4f46e5">Fila Cord</h2>
-        <p style="color:#64748b; font-size: 0.9rem;">Painel do Atendente</p>
-        <hr style="border:0; border-top:1px solid #f1f5f9; margin: 1.5rem 0;">
-        <label>Filtrar por Curso:</label>
-        <select id="filtro" onchange="renderizarFila()">
-            <option value="Todos">Todos os Cursos</option>
-            <option>Psicologia</option><option>Medicina</option><option>Direito</option>
-            <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
-            <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
-            <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
-        </select>
-        <div style="margin-top:2rem">
-            <small style="color:#94a3b8">Total na fila:</small>
-            <div id="total" style="font-size:2rem; font-weight:800">0</div>
+        <h2 style="color:var(--primary); margin:0">Fila Cord</h2>
+        <p style="color:#64748b; margin-top:5px">Gerenciamento de Fila</p>
+        
+        <div style="margin-top:2.5rem">
+            <label style="font-weight:600">Filtrar Atendimento</label>
+            <select id="filtro" onchange="renderizarFila()">
+                <option value="Todos">Todos os Cursos</option>
+                <option>Psicologia</option><option>Medicina</option><option>Direito</option>
+                <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
+                <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
+                <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
+            </select>
+        </div>
+
+        <div style="margin-top:2rem; background: #f1f5f9; padding: 1.5rem; border-radius: 16px;">
+            <small style="color:#64748b; text-transform: uppercase; font-weight:700">Aguardando</small>
+            <div id="total" style="font-size:2.5rem; font-weight:800; color: var(--primary)">0</div>
         </div>
     </aside>
 
     <main>
-        <div id="lista"></div>
+        <div class="header-main">
+            <h1>Fila de Espera</h1>
+            <div id="relogio" style="font-weight:600; color:#94a3b8"></div>
+        </div>
+        <div id="lista" class="grid-fila">
+            </div>
     </main>
 
     <script type="module">
@@ -57,6 +110,7 @@
         const db = getFirestore(app);
         let dadosFila = [];
 
+        // Listener em tempo real
         onSnapshot(query(collection(db, "fila"), orderBy("hora", "asc")), (snap) => {
             dadosFila = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderizarFila();
@@ -68,41 +122,53 @@
             const filteredData = filtro === "Todos" ? dadosFila : dadosFila.filter(a => a.curso === filtro);
             
             document.getElementById('total').innerText = filteredData.length;
+            
             lista.innerHTML = filteredData.map(a => `
-                <div class="card-aluno">
-                    <div>
-                        <div style="font-size:1.2rem; font-weight:700">${a.senha} - ${a.nome}</div>
-                        <div style="color:#64748b">${a.curso}</div>
+                <div class="card-aluno ${a.status === 'CHAMANDO' ? 'status-chamando' : ''}">
+                    <div class="info-top">
+                        <div class="aluno-detalhes">
+                            <p style="color:var(--primary); font-weight:700; margin:0">${a.curso}</p>
+                            <h3>${a.nome}</h3>
+                            <p>CPF: ${a.cpf}</p>
+                        </div>
+                        <div class="senha-tag">${a.senha}</div>
                     </div>
-                    <div>
-                        <button class="btn-chamar" onclick="chamar('${a.id}', '${a.nome}')">CHAMAR</button>
-                        <button class="btn-finalizar" onclick="finalizar('${a.id}')">✖</button>
+                    
+                    <div class="motivo-box">
+                        <strong>Motivo:</strong> ${a.motivo}
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-chamar" onclick="chamar('${a.id}', '${a.nome}')">
+                            ${a.status === 'CHAMANDO' ? 'CHAMANDO NOVAMENTE' : 'CHAMAR ALUNO'}
+                        </button>
+                        <button class="btn btn-finalizar" onclick="finalizar('${a.id}')">FINALIZAR</button>
                     </div>
                 </div>
             `).join('');
         };
 
-        window.chamar = (id, nome) => {
-            // Ding Dong Sonoro (Navegador)
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        window.chamar = async (id, nome) => {
+            // Atualiza status no Firebase para ficar verde
+            const docRef = doc(db, "fila", id);
+            await updateDoc(docRef, { status: "CHAMANDO" });
 
-            // Fala o nome
-            setTimeout(() => {
-                const msg = new SpeechSynthesisUtterance(`Próximo atendimento, ${nome}`);
-                msg.lang = 'pt-BR';
-                window.speechSynthesis.speak(msg);
-            }, 600);
+            // Voz
+            const msg = new SpeechSynthesisUtterance(`Próximo atendimento, ${nome}`);
+            msg.lang = 'pt-BR';
+            window.speechSynthesis.speak(msg);
         };
 
-        window.finalizar = async (id) => { if(confirm("Concluir?")) await deleteDoc(doc(db, "fila", id)); };
+        window.finalizar = async (id) => { 
+            if(confirm("Deseja finalizar este atendimento?")) {
+                await deleteDoc(doc(db, "fila", id)); 
+            }
+        };
+
+        // Relógio simples
+        setInterval(() => {
+            document.getElementById('relogio').innerText = new Date().toLocaleTimeString();
+        }, 1000);
     </script>
 </body>
 </html>
