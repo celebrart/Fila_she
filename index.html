@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check-in Digital | Fila Cord</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --primary: #6366f1;
@@ -23,7 +24,6 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .glow {
@@ -51,7 +51,11 @@
             padding: 2.5rem;
         }
 
-        .header { text-align: center; margin-bottom: 2rem; }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
         .header h1 {
             font-size: 1.8rem;
             font-weight: 800;
@@ -59,10 +63,23 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .header p { color: #94a3b8; }
 
-        .input-group { margin-bottom: 1.25rem; }
-        label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; display: block; }
+        .header p {
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
 
         input, select, textarea {
             width: 100%;
@@ -72,28 +89,45 @@
             border-radius: 16px;
             color: white;
             font-size: 1rem;
+            font-family: inherit;
         }
+
+        textarea { resize: none; }
 
         button {
             width: 100%;
             padding: 18px;
             background: var(--primary);
+            color: white;
             border: none;
             border-radius: 18px;
-            color: white;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
+            margin-top: 1rem;
         }
 
-        #sucesso { display: none; text-align: center; }
-        .senha-box { font-size: 4.5rem; font-weight: 800; margin: 1rem 0; }
+        #sucesso {
+            display: none;
+            text-align: center;
+        }
+
+        .senha-box {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            text-shadow: 0 0 30px rgba(99,102,241,.5);
+        }
     </style>
 </head>
+
 <body>
 <div class="glow"></div>
 
 <div class="container">
     <div class="card">
+
+        <!-- FORMULÁRIO -->
         <div id="form-area">
             <div class="header">
                 <h1>Fila Cord Digital</h1>
@@ -102,18 +136,18 @@
 
             <div class="input-group">
                 <label>NOME COMPLETO</label>
-                <input type="text" id="nome">
+                <input type="text" id="nome" placeholder="Ex: João Silva">
             </div>
 
             <div class="input-group">
                 <label>CPF</label>
-                <input type="text" id="cpf" maxlength="14">
+                <input type="text" id="cpf" placeholder="000.000.000-00">
             </div>
 
             <div class="input-group">
                 <label>CURSO</label>
                 <select id="curso">
-                    <option value="">Selecione...</option>
+                    <option value="">Selecione seu curso...</option>
                     <option>Psicologia</option>
                     <option>Medicina</option>
                     <option>Direito</option>
@@ -139,18 +173,21 @@
             </div>
 
             <div class="input-group">
-                <label>MOTIVO</label>
+                <label>MOTIVO DO ATENDIMENTO</label>
                 <textarea id="motivo" rows="2"></textarea>
             </div>
 
             <button onclick="gerar()">GERAR MINHA SENHA</button>
         </div>
 
+        <!-- SUCESSO -->
         <div id="sucesso">
             <div class="senha-box" id="disp-senha">---</div>
-            <h2>Chamaremos você em breve</h2>
-            <p id="curso-chamado"></p>
+            <h2>Senha gerada com sucesso</h2>
+            <p id="curso-chamado" style="color:#c7d2fe; font-weight:600"></p>
+            <p style="color:#94a3b8">Aguarde, você será chamado em breve.</p>
         </div>
+
     </div>
 </div>
 
@@ -168,24 +205,42 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.gerar = async () => {
-    const nome = nome.value;
-    const cpf = cpf.value;
-    const curso = curso.value;
-    const motivo = motivo.value;
-    const preferencial = preferencial.value;
+    const nome = document.getElementById("nome").value.trim();
+    const cpf = document.getElementById("cpf").value.trim();
+    const curso = document.getElementById("curso").value;
+    const motivo = document.getElementById("motivo").value.trim();
+    const preferencial = document.getElementById("preferencial").value;
 
-    const senha = (preferencial === "SIM" ? "P" : "A") + Math.floor(100 + Math.random() * 899);
+    if (!nome || !cpf || !curso || !motivo) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
 
-    await addDoc(collection(db, "fila"), {
-        nome, cpf, curso, motivo, senha, preferencial,
-        status: "ESPERA",
-        hora: serverTimestamp()
-    });
+    const senha =
+        (preferencial === "SIM" ? "P" : "A") +
+        Math.floor(100 + Math.random() * 899);
 
-    form-area.style.display = "none";
-    sucesso.style.display = "block";
-    disp-senha.innerText = senha;
-    curso-chamado.innerText = `Curso: ${curso}`;
+    try {
+        await addDoc(collection(db, "fila"), {
+            nome,
+            cpf,
+            curso,
+            motivo,
+            senha,
+            preferencial,
+            status: "ESPERA",
+            hora: serverTimestamp()
+        });
+
+        document.getElementById("form-area").style.display = "none";
+        document.getElementById("sucesso").style.display = "block";
+        document.getElementById("disp-senha").innerText = senha;
+        document.getElementById("curso-chamado").innerText = `Curso: ${curso}`;
+
+    } catch (e) {
+        alert("Erro ao gerar a senha. Verifique sua conexão.");
+        console.error(e);
+    }
 };
 </script>
 </body>
