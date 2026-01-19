@@ -4,91 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Gestão - Fila Cord</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5;
             --success: #10b981;
-            --bg: #f8fafc;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f1f5f9;
             --text-main: #1e293b;
+            --sidebar-width: 320px;
         }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; color: var(--text-main); }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            display: flex; 
+            color: var(--text-main);
+            min-height: 100vh;
+        }
         
-        /* Sidebar Refinada */
-        aside { width: 300px; background: #fff; height: 100vh; border-right: 1px solid #e2e8f0; padding: 2rem; position: sticky; top: 0; }
+        /* Sidebar */
+        aside { 
+            width: var(--sidebar-width); 
+            background: #fff; 
+            height: 100vh; 
+            border-right: 1px solid #e2e8f0; 
+            padding: 2rem; 
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-sizing: border-box;
+        }
         
-        /* Main Area */
-        main { flex: 1; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+        /* Área Principal */
+        main { 
+            flex: 1; 
+            margin-left: var(--sidebar-width);
+            padding: 3rem; 
+            max-width: 1200px;
+        }
         
-        .header-main { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .header-main { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 3rem; 
+        }
+
+        .header-main h1 { font-size: 2.2rem; font-weight: 800; margin: 0; }
 
         /* Grid de Cards */
-        .grid-fila { display: grid; gap: 1rem; }
+        .grid-fila { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+            gap: 1.5rem; 
+        }
 
         .card-aluno { 
             background: white; 
-            border-radius: 16px; 
-            padding: 1.5rem; 
+            border-radius: 24px; 
+            padding: 2rem; 
             display: flex; 
             flex-direction: column;
-            gap: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            gap: 1.2rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); 
             border: 2px solid transparent; 
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Destaque quando chamando */
+        /* Indicativo Preferencial no Card */
+        .card-aluno.is-pref {
+            border-left: 8px solid var(--danger);
+        }
+
         .card-aluno.status-chamando { 
             border-color: var(--success); 
             background: #f0fdf4;
-            transform: scale(1.02);
+            transform: scale(1.03);
+            z-index: 10;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
 
         .info-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .senha-tag { background: #eef2ff; color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 800; font-size: 1.2rem; }
         
-        .aluno-detalhes h3 { margin: 0; font-size: 1.1rem; }
-        .aluno-detalhes p { margin: 4px 0; color: #64748b; font-size: 0.9rem; }
+        .senha-tag { 
+            background: #eef2ff; 
+            color: var(--primary); 
+            padding: 12px 20px; 
+            border-radius: 16px; 
+            font-weight: 800; 
+            font-size: 1.8rem;
+            line-height: 1;
+        }
 
-        .motivo-box { background: #f1f5f9; padding: 12px; border-radius: 8px; font-style: italic; font-size: 0.9rem; border-left: 4px solid #cbd5e1; }
-
-        .actions { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; pt: 1rem; padding-top: 1rem; }
+        .senha-tag.pref {
+            background: var(--danger);
+            color: white;
+        }
         
-        .btn { border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; flex: 1; }
+        .aluno-detalhes h3 { margin: 5px 0; font-size: 1.4rem; font-weight: 700; }
+        .aluno-detalhes p { margin: 2px 0; color: #64748b; font-size: 1rem; }
+
+        .badge-curso {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .motivo-box { 
+            background: #f8fafc; 
+            padding: 1.2rem; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .actions { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 0.5rem;
+        }
+        
+        .btn { 
+            border: none; 
+            padding: 14px 24px; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            flex: 1; 
+            font-size: 0.95rem;
+        }
         .btn-chamar { background: var(--primary); color: white; }
-        .btn-finalizar { background: #ef4444; color: white; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-finalizar { background: #fee2e2; color: var(--danger); }
+        
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-chamar:active { transform: scale(0.98); }
 
-        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; margin-top: 8px; }
+        select { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 1rem;
+            font-family: inherit;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #94a3b8;
+            grid-column: 1 / -1;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        .calling-text {
+            color: var(--success);
+            font-weight: 800;
+            font-size: 0.8rem;
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body>
     <aside>
-        <h2 style="color:var(--primary); margin:0">Fila Cord</h2>
-        <p style="color:#64748b; margin-top:5px">Gerenciamento de Fila</p>
+        <div style="margin-bottom: 2rem;">
+            <h2 style="color:var(--primary); margin:0; font-size: 1.8rem;">Fila Cord</h2>
+            <p style="color:#64748b; margin-top:5px; font-weight: 500;">Painel do Atendente</p>
+        </div>
         
         <div style="margin-top:2.5rem">
-            <label style="font-weight:600">Filtrar Atendimento</label>
+            <label style="font-weight:700; color: #475569; font-size: 0.9rem;">FILTRAR POR CURSO</label>
             <select id="filtro" onchange="renderizarFila()">
                 <option value="Todos">Todos os Cursos</option>
-                <option>Psicologia</option><option>Medicina</option><option>Direito</option>
-                <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
-                <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
-                <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
+                <option>Enfermagem</option>
+                <option>Psicologia</option>
+                <option>Medicina</option>
+                <option>Direito</option>
+                <option>Administração</option>
+                <option>Arquitetura</option>
+                <option>Publicidade</option>
+                <option>Engenharia</option>
+                <option>Contabilidade</option>
+                <option>Ciências da computação</option>
+                <option>Fisioterapia</option>
+                <option>Nutrição</option>
+                <option>Outros</option>
             </select>
         </div>
 
-        <div style="margin-top:2rem; background: #f1f5f9; padding: 1.5rem; border-radius: 16px;">
-            <small style="color:#64748b; text-transform: uppercase; font-weight:700">Aguardando</small>
-            <div id="total" style="font-size:2.5rem; font-weight:800; color: var(--primary)">0</div>
+        <div style="margin-top:2rem; background: #f8fafc; padding: 2rem; border-radius: 24px; border: 1px solid #e2e8f0;">
+            <small style="color:#64748b; text-transform: uppercase; font-weight:800; letter-spacing: 0.05em;">Em espera</small>
+            <div id="total" style="font-size:3.5rem; font-weight:800; color: var(--primary); line-height: 1;">0</div>
         </div>
     </aside>
 
     <main>
         <div class="header-main">
             <h1>Fila de Espera</h1>
-            <div id="relogio" style="font-weight:600; color:#94a3b8"></div>
+            <div id="relogio" style="font-size: 1.2rem; font-weight:700; color:#64748b; background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"></div>
         </div>
+
         <div id="lista" class="grid-fila">
             </div>
     </main>
@@ -110,7 +242,7 @@
         const db = getFirestore(app);
         let dadosFila = [];
 
-        // Listener em tempo real
+        // Monitoramento em tempo real
         onSnapshot(query(collection(db, "fila"), orderBy("hora", "asc")), (snap) => {
             dadosFila = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderizarFila();
@@ -119,28 +251,38 @@
         window.renderizarFila = () => {
             const lista = document.getElementById('lista');
             const filtro = document.getElementById('filtro').value;
-            const filteredData = filtro === "Todos" ? dadosFila : dadosFila.filter(a => a.curso === filtro);
+            
+            // Prioriza preferencial na visualização se não houver filtro específico
+            const sortedData = [...dadosFila].sort((a, b) => (b.preferencial === a.preferencial) ? 0 : b.preferencial ? 1 : -1);
+            
+            const filteredData = filtro === "Todos" ? sortedData : sortedData.filter(a => a.curso === filtro);
             
             document.getElementById('total').innerText = filteredData.length;
             
+            if(filteredData.length === 0) {
+                lista.innerHTML = `<div class="empty-state"><h3>Nenhum aluno na fila no momento.</h3></div>`;
+                return;
+            }
+
             lista.innerHTML = filteredData.map(a => `
-                <div class="card-aluno ${a.status === 'CHAMANDO' ? 'status-chamando' : ''}">
+                <div class="card-aluno ${a.status === 'CHAMANDO' ? 'status-chamando' : ''} ${a.preferencial ? 'is-pref' : ''}">
                     <div class="info-top">
                         <div class="aluno-detalhes">
-                            <p style="color:var(--primary); font-weight:700; margin:0">${a.curso}</p>
+                            <span class="badge-curso">${a.curso}</span>
+                            ${a.status === 'CHAMANDO' ? '<span class="calling-text"> • CHAMANDO NO PAINEL</span>' : ''}
                             <h3>${a.nome}</h3>
-                            <p>CPF: ${a.cpf}</p>
+                            <p><strong>CPF:</strong> ${a.cpf}</p>
                         </div>
-                        <div class="senha-tag">${a.senha}</div>
+                        <div class="senha-tag ${a.preferencial ? 'pref' : ''}">${a.senha}</div>
                     </div>
                     
                     <div class="motivo-box">
-                        <strong>Motivo:</strong> ${a.motivo}
+                        ${a.motivo}
                     </div>
 
                     <div class="actions">
-                        <button class="btn btn-chamar" onclick="chamar('${a.id}', '${a.nome}')">
-                            ${a.status === 'CHAMANDO' ? 'CHAMANDO NOVAMENTE' : 'CHAMAR ALUNO'}
+                        <button class="btn btn-chamar" onclick="chamar('${a.id}', '${a.nome}', ${a.preferencial})">
+                            ${a.status === 'CHAMANDO' ? 'RECHAMAR' : 'CHAMAR ALUNO'}
                         </button>
                         <button class="btn btn-finalizar" onclick="finalizar('${a.id}')">FINALIZAR</button>
                     </div>
@@ -148,26 +290,26 @@
             `).join('');
         };
 
-        window.chamar = async (id, nome) => {
-            // Atualiza status no Firebase para ficar verde
+        window.chamar = async (id, nome, isPref) => {
             const docRef = doc(db, "fila", id);
             await updateDoc(docRef, { status: "CHAMANDO" });
 
-            // Voz
-            const msg = new SpeechSynthesisUtterance(`Próximo atendimento, ${nome}`);
+            // Voz personalizada
+            const prefMsg = isPref ? "Atendimento preferencial. " : "";
+            const msg = new SpeechSynthesisUtterance(`${prefMsg} Próximo aluno: ${nome}`);
             msg.lang = 'pt-BR';
+            msg.rate = 0.9;
             window.speechSynthesis.speak(msg);
         };
 
         window.finalizar = async (id) => { 
-            if(confirm("Deseja finalizar este atendimento?")) {
+            if(confirm("Deseja encerrar este atendimento e remover da fila?")) {
                 await deleteDoc(doc(db, "fila", id)); 
             }
         };
 
-        // Relógio simples
         setInterval(() => {
-            document.getElementById('relogio').innerText = new Date().toLocaleTimeString();
+            document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
         }, 1000);
     </script>
 </body>
