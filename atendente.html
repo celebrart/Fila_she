@@ -1,54 +1,282 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Painel Atendente</title>
-<style>
-.pref-badge {
-    background: #fee2e2;
-    color: #b91c1c;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 800;
-}
-</style>
-</head>
-<body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão - Fila Cord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
-<div id="lista"></div>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            color: var(--text-main);
+        }
+
+        aside {
+            width: 300px;
+            background: #fff;
+            height: 100vh;
+            border-right: 1px solid #e2e8f0;
+            padding: 2rem;
+            position: sticky;
+            top: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .grid-fila {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .card-aluno {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card-aluno.status-chamando {
+            border-color: var(--success);
+            background: #f0fdf4;
+            transform: scale(1.02);
+        }
+
+        .info-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .senha-tag {
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .aluno-detalhes h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .aluno-detalhes p {
+            margin: 4px 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .pref-badge {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-left: 8px;
+        }
+
+        .motivo-box {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            font-style: italic;
+            font-size: 0.9rem;
+            border-left: 4px solid #cbd5e1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+        }
+
+        .btn-chamar {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-finalizar {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<aside>
+    <h2 style="color:var(--primary); margin:0">Fila Cord</h2>
+    <p style="color:#64748b; margin-top:5px">Gerenciamento de Fila</p>
+
+    <div style="margin-top:2.5rem">
+        <label style="font-weight:600">Filtrar Atendimento</label>
+        <select id="filtro" onchange="renderizarFila()">
+            <option value="Todos">Todos os Cursos</option>
+            <option>Psicologia</option>
+            <option>Medicina</option>
+            <option>Direito</option>
+            <option>Administração</option>
+            <option>Arquitetura</option>
+            <option>Publicidade</option>
+            <option>Engenharia</option>
+            <option>Contabilidade</option>
+            <option>Ciências da computação</option>
+            <option>Fisioterapia</option>
+            <option>Nutrição</option>
+            <option>Enfermagem</option>
+            <option>Outros</option>
+        </select>
+    </div>
+
+    <div style="margin-top:2rem; background:#f1f5f9; padding:1.5rem; border-radius:16px;">
+        <small style="color:#64748b; font-weight:700">Aguardando</small>
+        <div id="total" style="font-size:2.5rem; font-weight:800; color:var(--primary)">0</div>
+    </div>
+</aside>
+
+<main>
+    <div class="header-main">
+        <h1>Fila de Espera</h1>
+        <div id="relogio" style="color:#94a3b8"></div>
+    </div>
+
+    <div id="lista" class="grid-fila"></div>
+</main>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+        getFirestore, collection, query, orderBy,
+        onSnapshot, doc, deleteDoc, updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp({
-    apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
-    projectId: "fila-cord"
-});
-const db = getFirestore(app);
+    const app = initializeApp({
+        apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
+        projectId: "fila-cord"
+    });
 
-onSnapshot(collection(db,"fila"), snap => {
-    lista.innerHTML = snap.docs.map(d => {
-        const a = d.data();
-        return `
-            <div>
-                <h3>${a.nome}
-                ${a.preferencial === "SIM" ? '<span class="pref-badge">PREFERENCIAL</span>' : ''}
-                </h3>
-                <p>${a.curso}</p>
-                <strong>${a.senha}</strong>
-                <button onclick="chamar('${d.id}','${a.nome}','${a.curso}')">CHAMAR</button>
+    const db = getFirestore(app);
+    let dadosFila = [];
+
+    onSnapshot(query(collection(db, "fila"), orderBy("hora", "asc")), snap => {
+        dadosFila = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderizarFila();
+    });
+
+    window.renderizarFila = () => {
+        const filtro = document.getElementById("filtro").value;
+        const lista = document.getElementById("lista");
+
+        const dados = filtro === "Todos"
+            ? dadosFila
+            : dadosFila.filter(a => a.curso === filtro);
+
+        document.getElementById("total").innerText = dados.length;
+
+        lista.innerHTML = dados.map(a => `
+            <div class="card-aluno ${a.status === 'CHAMANDO' ? 'status-chamando' : ''}">
+                <div class="info-top">
+                    <div class="aluno-detalhes">
+                        <p style="color:var(--primary); font-weight:700">${a.curso}</p>
+                        <h3>
+                            ${a.nome}
+                            ${a.preferencial === 'SIM' ? '<span class="pref-badge">PREFERENCIAL</span>' : ''}
+                        </h3>
+                        <p>CPF: ${a.cpf}</p>
+                    </div>
+                    <div class="senha-tag">${a.senha}</div>
+                </div>
+
+                <div class="motivo-box">
+                    <strong>Motivo:</strong> ${a.motivo}
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-chamar" onclick="chamar('${a.id}', '${a.nome}', '${a.curso}')">
+                        CHAMAR ALUNO
+                    </button>
+                    <button class="btn btn-finalizar" onclick="finalizar('${a.id}')">
+                        FINALIZAR
+                    </button>
+                </div>
             </div>
-        `;
-    }).join("");
-});
+        `).join("");
+    };
 
-window.chamar = async (id,nome,curso) => {
-    await updateDoc(doc(db,"fila",id), { status:"CHAMANDO" });
-    const msg = new SpeechSynthesisUtterance(`Próximo atendimento ${nome}, curso ${curso}`);
-    speechSynthesis.speak(msg);
-};
+    window.chamar = async (id, nome, curso) => {
+        await updateDoc(doc(db, "fila", id), { status: "CHAMANDO" });
+
+        const msg = new SpeechSynthesisUtterance(
+            `Próximo atendimento, ${nome}, curso ${curso}`
+        );
+        msg.lang = "pt-BR";
+        speechSynthesis.speak(msg);
+    };
+
+    window.finalizar = async (id) => {
+        if (confirm("Deseja finalizar este atendimento?")) {
+            await deleteDoc(doc(db, "fila", id));
+        }
+    };
+
+    setInterval(() => {
+        document.getElementById("relogio").innerText =
+            new Date().toLocaleTimeString();
+    }, 1000);
 </script>
 </body>
 </html>
