@@ -1,18 +1,32 @@
-<select id="curso">
-    <option value="">Selecione seu curso...</option>
-    <option>Enfermagem</option> <option>Psicologia</option><option>Medicina</option>
+<div class="input-group">
+    <label>CURSO</label>
+    <select id="curso">
+        <option value="">Selecione seu curso...</option>
+        <option>Enfermagem</option> <option>Psicologia</option><option>Medicina</option><option>Direito</option>
+        <option>Administração</option><option>Arquitetura</option><option>Publicidade</option>
+        <option>Engenharia</option><option>Contabilidade</option><option>Ciências da computação</option>
+        <option>Fisioterapia</option><option>Nutrição</option><option>Outros</option>
     </select>
-
-<div class="input-group" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;">
-    <input type="checkbox" id="preferencial" style="width: 20px; height: 20px; cursor: pointer;">
-    <label for="preferencial" style="margin: 0; cursor: pointer;">Atendimento Preferencial</label>
 </div>
 
+<div class="input-group" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 16px;">
+    <input type="checkbox" id="preferencial" style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
+    <label for="preferencial" style="margin: 0; cursor: pointer; font-size: 0.9rem;">Possuo necessidade de atendimento preferencial</label>
+</div>
+
+<div class="input-group">
 <script type="module">
-    // ... importações existentes ...
+    // Adicione 'onSnapshot' e 'doc' nas importações do Firestore
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    let idDocumentoAtual = null;
+    // ... config idêntica ...
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Variável para monitorar o documento do aluno atual
+    let alunoDocId = null;
 
     window.gerar = async () => {
         const nome = document.getElementById('nome').value;
@@ -22,11 +36,15 @@
         const ePreferencial = document.getElementById('preferencial').checked;
         const btn = document.getElementById('btn-gerar');
 
-        if(!nome || !cpf || !curso || !motivo) return alert("Preencha tudo!");
+        if(!nome || !cpf || !curso || !motivo) {
+            return alert("Por favor, preencha todos os campos para continuar.");
+        }
 
         try {
             btn.disabled = true;
-            // Gera prefixo P para preferencial e A para normal
+            btn.innerText = "PROCESSANDO...";
+
+            // Senha P para preferencial, A para normal
             const prefixo = ePreferencial ? "P" : "A";
             const senha = prefixo + Math.floor(100 + Math.random() * 899);
             
@@ -37,34 +55,38 @@
                 hora: serverTimestamp() 
             });
 
-            idDocumentoAtual = docRef.id;
+            alunoDocId = docRef.id;
             
-            // Inicia o monitoramento para saber quando ser chamado
-            monitorarChamada();
+            // Iniciar monitoramento para o chamado
+            monitorarChamado();
 
             document.getElementById('form-area').style.display = 'none';
             document.getElementById('sucesso').style.display = 'block';
             document.getElementById('disp-senha').innerText = senha;
             document.getElementById('user-nome').innerText = nome.split(' ')[0];
 
-        } catch (e) { console.error(e); btn.disabled = false; }
+        } catch (e) {
+            alert("Erro ao conectar.");
+            btn.disabled = false;
+        }
     }
 
-    // Função para avisar o aluno na tela dele
-    function monitorarChamada() {
-        if(!idDocumentoAtual) return;
-        
-        onSnapshot(doc(db, "fila", idDocumentoAtual), (doc) => {
-            if (doc.exists() && doc.data().status === "CHAMANDO") {
-                const statusBox = document.querySelector('.status-info');
-                statusBox.innerHTML = `
-                    <div style="background: #ef4444; padding: 15px; border-radius: 15px; animation: pulse 1.5s infinite;">
+    function monitorarChamado() {
+        onSnapshot(doc(db, "fila", alunoDocId), (snapshot) => {
+            const dados = snapshot.data();
+            if (dados && dados.status === "CHAMANDO") {
+                const statusInfo = document.querySelector('.status-info');
+                statusInfo.innerHTML = `
+                    <div style="background: #ef4444; padding: 1.5rem; border-radius: 20px; animation: pulse 1.5s infinite;">
                         <h2 style="margin:0; color: white;">SUA VEZ!</h2>
-                        <p style="margin:5px 0 0; color: white;">Dirija-se ao guichê de atendimento.</p>
+                        <p style="margin:5px 0 0; color: white; font-weight: 600;">DIRIJA-SE AO ATENDIMENTO AGORA</p>
                     </div>
                 `;
-                // Vibração no celular se disponível
-                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                // Tocar um alerta sonoro discreto se desejar
+                if (window.speechSynthesis) {
+                    const aviso = new SpeechSynthesisUtterance("Sua vez de ser atendido!");
+                    window.speechSynthesis.speak(aviso);
+                }
             }
         });
     }
