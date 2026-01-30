@@ -1,282 +1,436 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Gestão - Fila Cord</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>🖥️ Painel Atendente - Controle de Senha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --success: #10b981;
-            --bg: #f8fafc;
-            --text-main: #1e293b;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(-45deg, #11998e, #38ef7d, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            overflow-x: hidden;
         }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            margin: 0;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        h1 { 
+            color: #2c3e50; 
+            font-size: 36px; 
+            font-weight: 700;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .status { 
+            color: #4a5568; 
+            font-size: 18px; 
+            font-weight: 500;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .painel-senha, .controle { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(20px);
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .painel-senha { 
+            border: 3px solid #11998e;
+            animation: glowGreen 2s ease-in-out infinite alternate;
+        }
+        @keyframes glowGreen {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(17,153,142,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(17,153,142,0.6); }
+        }
+        .controle { 
+            border: 3px solid #f093fb;
+            animation: glowPink 2s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes glowPink {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(240,147,251,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(240,147,251,0.6); }
+        }
+        
+        .senha-atual {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .numero-senha { 
+            font-family: 'Courier New', monospace; 
+            font-size: 80px; 
+            font-weight: 900; 
+            letter-spacing: 10px;
+            background: linear-gradient(135deg, #11998e, #38ef7d, #38a169);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: pulseSenha 2s infinite;
+            text-shadow: 0 0 30px rgba(17,153,142,0.5);
+        }
+        @keyframes pulseSenha {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(17,153,142,0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(17,153,142,0.8)); }
+        }
+        .info-senha {
+            background: linear-gradient(135deg, rgba(17,153,142,0.1), rgba(56,239,125,0.1));
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(17,153,142,0.3);
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .historico {
+            margin-top: 30px;
+        }
+        .historico h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
             display: flex;
-            color: var(--text-main);
+            align-items: center;
+            gap: 10px;
         }
-
-        aside {
-            width: 300px;
-            background: #fff;
-            height: 100vh;
-            border-right: 1px solid #e2e8f0;
-            padding: 2rem;
-            position: sticky;
-            top: 0;
+        .lista-historico {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 15px;
         }
-
-        main {
-            flex: 1;
-            padding: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .header-main {
+        .item-historico {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .grid-fila {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .card-aluno {
+            padding: 10px;
+            margin-bottom: 10px;
             background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .controle-buttons {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            gap: 20px;
         }
-
-        .card-aluno.status-chamando {
-            border-color: var(--success);
-            background: #f0fdf4;
-            transform: scale(1.02);
-        }
-
-        .info-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .senha-tag {
-            background: #eef2ff;
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 1.2rem;
-        }
-
-        .aluno-detalhes h3 {
-            margin: 0;
-            font-size: 1.1rem;
-        }
-
-        .aluno-detalhes p {
-            margin: 4px 0;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .pref-badge {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            margin-left: 8px;
-        }
-
-        .motivo-box {
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 8px;
-            font-style: italic;
-            font-size: 0.9rem;
-            border-left: 4px solid #cbd5e1;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 1rem;
-        }
-
         .btn {
+            padding: 20px 25px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 20px;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
-            flex: 1;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
         }
-
-        .btn-chamar {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-finalizar {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        select {
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            margin-top: 8px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+        .btn-prox { 
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            box-shadow: 0 10px 30px rgba(17,153,142,0.4);
+        }
+        .btn-prox:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(17,153,142,0.6);
+        }
+        .btn-reset { 
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            box-shadow: 0 10px 30px rgba(240,147,251,0.4);
+        }
+        .btn-reset:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(240,147,251,0.6);
+        }
+        .btn-pausar { 
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+            box-shadow: 0 10px 30px rgba(237,137,54,0.4);
+        }
+        .status-pausado {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #c05621;
+            border: 2px solid #f6ad55;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: pulseWarning 2s infinite;
+        }
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particula {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: floatUp 8s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        
+        @media (max-width: 900px) { 
+            .main-container { 
+                grid-template-columns: 1fr; 
+                gap: 30px;
+                max-width: 500px;
+            }
+            .numero-senha { font-size: 60px; }
         }
     </style>
 </head>
-
 <body>
-<aside>
-    <h2 style="color:var(--primary); margin:0">Fila Cord</h2>
-    <p style="color:#64748b; margin-top:5px">Gerenciamento de Fila</p>
-
-    <div style="margin-top:2.5rem">
-        <label style="font-weight:600">Filtrar Atendimento</label>
-        <select id="filtro" onchange="renderizarFila()">
-            <option value="Todos">Todos os Cursos</option>
-            <option>Psicologia</option>
-            <option>Medicina</option>
-            <option>Direito</option>
-            <option>Administração</option>
-            <option>Arquitetura</option>
-            <option>Publicidade</option>
-            <option>Engenharia</option>
-            <option>Contabilidade</option>
-            <option>Ciências da computação</option>
-            <option>Fisioterapia</option>
-            <option>Nutrição</option>
-            <option>Enfermagem</option>
-            <option>Outros</option>
-        </select>
+    <div class="particulas" id="particulas"></div>
+    
+    <div class="header">
+        <h1><i class="fas fa-headset"></i> Painel Atendente</h1>
+        <div class="status" id="status">Aguardando próxima senha...</div>
     </div>
-
-    <div style="margin-top:2rem; background:#f1f5f9; padding:1.5rem; border-radius:16px;">
-        <small style="color:#64748b; font-weight:700">Aguardando</small>
-        <div id="total" style="font-size:2.5rem; font-weight:800; color:var(--primary)">0</div>
-    </div>
-</aside>
-
-<main>
-    <div class="header-main">
-        <h1>Fila de Espera</h1>
-        <div id="relogio" style="color:#94a3b8"></div>
-    </div>
-
-    <div id="lista" class="grid-fila"></div>
-</main>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-        getFirestore, collection, query, orderBy,
-        onSnapshot, doc, deleteDoc, updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const app = initializeApp({
-        apiKey: "AIzaSyCMwHzsfQZIHsEqKlkIpQNTbZxCVYhFoZ8",
-        projectId: "fila-cord"
-    });
-
-    const db = getFirestore(app);
-    let dadosFila = [];
-
-    onSnapshot(query(collection(db, "fila"), orderBy("hora", "asc")), snap => {
-        dadosFila = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderizarFila();
-    });
-
-    window.renderizarFila = () => {
-        const filtro = document.getElementById("filtro").value;
-        const lista = document.getElementById("lista");
-
-        const dados = filtro === "Todos"
-            ? dadosFila
-            : dadosFila.filter(a => a.curso === filtro);
-
-        document.getElementById("total").innerText = dados.length;
-
-        lista.innerHTML = dados.map(a => `
-            <div class="card-aluno ${a.status === 'CHAMANDO' ? 'status-chamando' : ''}">
-                <div class="info-top">
-                    <div class="aluno-detalhes">
-                        <p style="color:var(--primary); font-weight:700">${a.curso}</p>
-                        <h3>
-                            ${a.nome}
-                            ${a.preferencial === 'SIM' ? '<span class="pref-badge">PREFERENCIAL</span>' : ''}
-                        </h3>
-                        <p>CPF: ${a.cpf}</p>
-                    </div>
-                    <div class="senha-tag">${a.senha}</div>
-                </div>
-
-                <div class="motivo-box">
-                    <strong>Motivo:</strong> ${a.motivo}
-                </div>
-
-                <div class="actions">
-                    <button class="btn btn-chamar" onclick="chamar('${a.id}', '${a.nome}', '${a.curso}')">
-                        CHAMAR ALUNO
-                    </button>
-                    <button class="btn btn-finalizar" onclick="finalizar('${a.id}')">
-                        FINALIZAR
-                    </button>
+    
+    <div class="main-container">
+        <div class="painel-senha">
+            <div class="senha-atual">
+                <div class="numero-senha" id="numeroSenha">000000</div>
+                <div class="info-senha" id="infoSenha">
+                    <i class="fas fa-clock"></i> Aguardando...
                 </div>
             </div>
-        `).join("");
-    };
+            <div class="historico">
+                <h3><i class="fas fa-history"></i> Últimas Senhas</h3>
+                <div class="lista-historico" id="historico">
+                    <div style="text-align: center; color: #a0aec0; padding: 20px;">
+                        Nenhuma senha atendida
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controle">
+            <div id="statusPausado" class="status-pausado" style="display: none;">
+                <i class="fas fa-pause-circle"></i> ATENDIMENTO PAUSADO
+            </div>
+            <div class="controle-buttons">
+                <button class="btn btn-prox" id="btnProx">
+                    <i class="fas fa-arrow-right"></i>
+                    Próxima Senha
+                </button>
+                <button class="btn btn-pausar" id="btnPausar">
+                    <i class="fas fa-pause"></i>
+                    Pausar Atendimento
+                </button>
+                <button class="btn btn-reset" id="btnReset">
+                    <i class="fas fa-redo"></i>
+                    Reiniciar Sistema
+                </button>
+            </div>
+        </div>
+    </div>
 
-    window.chamar = async (id, nome, curso) => {
-        await updateDoc(doc(db, "fila", id), { status: "CHAMANDO" });
-
-        const msg = new SpeechSynthesisUtterance(
-            `Próximo atendimento, ${nome}, curso ${curso}`
-        );
-        msg.lang = "pt-BR";
-        speechSynthesis.speak(msg);
-    };
-
-    window.finalizar = async (id) => {
-        if (confirm("Deseja finalizar este atendimento?")) {
-            await deleteDoc(doc(db, "fila", id));
+    <script>
+        class PainelAtendente {
+            constructor() {
+                this.senhaAtual = 100000;
+                this.senhasHistorico = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
+                this.pausado = false;
+                this.init();
+            }
+            
+            init() {
+                this.criarParticulas();
+                this.renderizarHistorico();
+                this.bindEvents();
+                this.atualizarStatus();
+            }
+            
+            criarParticulas() {
+                const particulas = document.getElementById('particulas');
+                for (let i = 0; i < 60; i++) {
+                    const particula = document.createElement('div');
+                    particula.className = 'particula';
+                    particula.style.left = Math.random() * 100 + '%';
+                    particula.style.animationDelay = Math.random() * 8 + 's';
+                    particula.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                    particulas.appendChild(particula);
+                }
+            }
+            
+            bindEvents() {
+                document.getElementById('btnProx').addEventListener('click', () => this.proximaSenha());
+                document.getElementById('btnPausar').addEventListener('click', () => this.togglePausar());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetSistema());
+            }
+            
+            proximaSenha() {
+                if (this.pausado) return;
+                
+                this.senhaAtual++;
+                const senhaFormatada = this.senhaAtual.toString().padStart(6, '0');
+                
+                document.getElementById('numeroSenha').textContent = senhaFormatada;
+                document.getElementById('infoSenha').innerHTML = `
+                    <i class="fas fa-user-check"></i> 
+                    Chamando senha <strong>${senhaFormatada}</strong>
+                `;
+                
+                // Animação de chamada
+                const numero = document.getElementById('numeroSenha');
+                numero.style.animation = 'none';
+                numero.offsetHeight;
+                numero.style.animation = 'pulseSenha 0.6s infinite';
+                
+                setTimeout(() => {
+                    numero.style.animation = 'pulseSenha 2s infinite';
+                }, 2000);
+                
+                this.adicionarHistorico(senhaFormatada);
+                this.atualizarStatus();
+            }
+            
+            adicionarHistorico(senha) {
+                const agora = new Date().toLocaleTimeString('pt-BR');
+                this.senhasHistorico.unshift({ senha, hora: agora });
+                if (this.senhasHistorico.length > 10) {
+                    this.senhasHistorico = this.senhasHistorico.slice(0, 10);
+                }
+                localStorage.setItem('historicoSenhas', JSON.stringify(this.senhasHistorico));
+                this.renderizarHistorico();
+            }
+            
+            renderizarHistorico() {
+                const historico = document.getElementById('historico');
+                if (this.senhasHistorico.length === 0) {
+                    historico.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nenhuma senha atendida</div>';
+                    return;
+                }
+                historico.innerHTML = this.senhasHistorico.map(item => 
+                    `<div class="item-historico">
+                        <span><i class="fas fa-ticket-alt"></i> ${item.senha}</span>
+                        <span style="color: #4a5568;">${item.hora}</span>
+                    </div>`
+                ).join('');
+            }
+            
+            togglePausar() {
+                this.pausado = !this.pausado;
+                const statusPausado = document.getElementById('statusPausado');
+                const btnPausar = document.getElementById('btnPausar');
+                
+                if (this.pausado) {
+                    statusPausado.style.display = 'block';
+                    btnPausar.innerHTML = '<i class="fas fa-play"></i> Retomar Atendimento';
+                } else {
+                    statusPausado.style.display = 'none';
+                    btnPausar.innerHTML = '<i class="fas fa-pause"></i> Pausar Atendimento';
+                }
+                this.atualizarStatus();
+            }
+            
+            resetSistema() {
+                if (confirm('Deseja reiniciar o sistema? Todas as senhas serão zeradas.')) {
+                    this.senhaAtual = 100000;
+                    this.senhasHistorico = [];
+                    localStorage.removeItem('historicoSenhas');
+                    document.getElementById('numeroSenha').textContent = '000000';
+                    document.getElementById('infoSenha').innerHTML = '<i class="fas fa-clock"></i> Aguardando...';
+                    this.renderizarHistorico();
+                    this.atualizarStatus();
+                }
+            }
+            
+            atualizarStatus() {
+                const status = document.getElementById('status');
+                if (this.pausado) {
+                    status.textContent = 'Atendimento pausado';
+                    status.style.color = '#ed8936';
+                } else {
+                    status.textContent = 'Clique em "Próxima Senha" para continuar';
+                    status.style.color = '#4a5568';
+                }
+            }
         }
-    };
-
-    setInterval(() => {
-        document.getElementById("relogio").innerText =
-            new Date().toLocaleTimeString();
-    }, 1000);
-</script>
+        
+        // Inicializa o painel
+        document.addEventListener('DOMContentLoaded', () => {
+            new PainelAtendente();
+        });
+    </script>
 </body>
 </html>
