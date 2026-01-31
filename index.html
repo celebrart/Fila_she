@@ -3,75 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🩺 Gerador de Senha - Aluno</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Geração de Senha - Aluno</title>
     <style>
-        /* Mantenha seu CSS original aqui - omitido para foco no funcionamento */
-        body { font-family: 'Poppins', sans-serif; background: #667eea; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 450px; }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background: #764ba2; color: white; border: none; font-weight: bold; cursor: pointer; }
-        #senha { text-align: center; font-size: 24px; font-weight: bold; color: #38a169; background: #f0fff4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; font-size: 28px; }
+        .campo { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; transition: border-color 0.3s, box-shadow 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 10px rgba(102,126,234,0.2); }
+        .secao-oculta { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; margin: 20px 0; padding: 20px; background: #f8f9ff; border-radius: 15px; border-left: 5px solid #667eea; }
+        .secao-visivel { display: block !important; opacity: 1 !important; transform: translateY(0) !important; }
+        button { width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        .mensagem { margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center; font-weight: 500; }
+        .mensagem.sucesso { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .mensagem.erro { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @media (max-width: 600px) { .container { padding: 30px 20px; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 style="text-align: center;">Gerador de Senha</h2>
+        <h1>Gerar Senha de Atendimento</h1>
         <form id="formSenha">
-            <input type="text" id="nome" placeholder="Nome Completo" required>
-            <input type="text" id="matricula" placeholder="Matrícula" required>
-            <select id="curso" required>
-                <option value="">Selecione o curso</option>
-                <option value="medicina">🩺 Medicina</option>
-                <option value="direito">⚖️ Direito</option>
-                <option value="outros">📖 Outros</option>
-            </select>
-            <input type="text" id="senha" readonly placeholder="Senha será gerada aqui">
-            <button type="submit">Confirmar e Enviar</button>
+            <div class="campo">
+                <label for="nome">Nome Completo *</label>
+                <input type="text" id="nome" required>
+            </div>
+            <div class="campo">
+                <label for="matricula">Matrícula *</label>
+                <input type="text" id="matricula" required>
+            </div>
+            <div class="campo">
+                <label for="curso">Curso *</label>
+                <select id="curso" required>
+                    <option value="">Selecione o curso</option>
+                    <option value="medicina">Medicina</option>
+                    <option value="enfermagem">Enfermagem</option>
+                    <option value="odontologia">Odontologia</option>
+                    <option value="fisioterapia">Fisioterapia</option>
+                    <option value="nutricao">Nutrição</option>
+                    <option value="psicologia">Psicologia</option>
+                    <option value="direito">Direito</option>
+                    <option value="engenharia">Engenharia</option>
+                    <option value="administracao">Administração</option>
+                    <option value="contabilidade">Contabilidade</option>
+                    <option value="pedagogia">Pedagogia</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+            
+            <!-- Seção Medicina - Inicialmente oculta -->
+            <div id="secaoMedicina" class="secao-oculta">
+                <div class="campo">
+                    <label for="responsavel">Responsável *</label>
+                    <select id="responsavel" required disabled>
+                        <option value="">Selecione o responsável</option>
+                        <option value="marcele">Marcele</option>
+                        <option value="emmanuelle">Emmanuelle</option>
+                        <option value="leydiane">Leydiane</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="motivo">Motivo *</label>
+                    <select id="motivo" required disabled>
+                        <option value="">Selecione o motivo</option>
+                        <option value="dispensa">Dispensa</option>
+                        <option value="internato">Internato</option>
+                        <option value="duvidas">Dúvidas</option>
+                        <option value="alocacao">Alocação</option>
+                        <option value="salas">Salas</option>
+                        <option value="coordenacao">Falar com coordenação</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="campo">
+                <label for="senha">Sua Senha:</label>
+                <input type="text" id="senha" readonly placeholder="Senha será gerada automaticamente">
+            </div>
+            
+            <button type="submit">Confirmar e Gerar Senha</button>
         </form>
-        <p id="msg" style="text-align: center; display: none;"></p>
+        <div id="mensagem" class="mensagem"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
-            authDomain: "fila-coordenacao.firebaseapp.com",
-            databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
-            projectId: "fila-coordenacao",
-            storageBucket: "fila-coordenacao.firebasestorage.app",
-            messagingSenderId: "302987735020",
-            appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        document.addEventListener('DOMContentLoaded', function() {
+            const cursoSelect = document.getElementById('curso');
+            const responsavelSelect = document.getElementById('responsavel');
+            const motivoSelect = document.getElementById('motivo');
+            const secaoMedicina = document.getElementById('secaoMedicina');
+            const senhaInput = document.getElementById('senha');
+            const form = document.getElementById('formSenha');
+            const mensagem = document.getElementById('mensagem');
 
-        const form = document.getElementById('formSenha');
-        const senhaInput = document.getElementById('senha');
-
-        // Gera a senha assim que carrega
-        senhaInput.value = Math.floor(100000 + Math.random() * 900000);
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const dados = {
-                nome: document.getElementById('nome').value,
-                curso: document.getElementById('curso').value,
-                senha: senhaInput.value,
-                status: 'aguardando',
-                timestamp: Date.now()
-            };
-
-            database.ref('fila').push(dados).then(() => {
-                const msg = document.getElementById('msg');
-                msg.innerText = "✅ Senha enviada com sucesso!";
-                msg.style.display = "block";
-                form.reset();
-                senhaInput.value = Math.floor(100000 + Math.random() * 900000);
+            // Mostra/esconde seção Medicina
+            cursoSelect.addEventListener('change', function() {
+                if (this.value === 'medicina') {
+                    secaoMedicina.classList.remove('secao-oculta');
+                    secaoMedicina.classList.add('secao-visivel');
+                    responsavelSelect.disabled = false;
+                    gerarSenha(); // Gera senha inicial
+                } else {
+                    secaoMedicina.classList.remove('secao-visivel');
+                    secaoMedicina.classList.add('secao-oculta');
+                    responsavelSelect.disabled = true;
+                    motivoSelect.disabled = true;
+                    limparSelecoes();
+                }
             });
+
+            // Habilita motivo ao selecionar responsável
+            responsavelSelect.addEventListener('change', function() {
+                if (this.value) {
+                    motivoSelect.disabled = false;
+                    gerarSenha();
+                } else {
+                    motivoSelect.disabled = true;
+                    limparMotivo();
+                }
+            });
+
+            // Gera senha aleatória (6 dígitos)
+            function gerarSenha() {
+                const senha = Math.floor(100000 + Math.random() * 900000);
+                senhaInput.value = senha;
+            }
+
+            function limparSelecoes() {
+                responsavelSelect.value = '';
+                motivoSelect.value = '';
+                senhaInput.value = '';
+            }
+
+            function limparMotivo() {
+                motivoSelect.value = '';
+                senhaInput.value = '';
+            }
+
+            // Submit do formulário
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (cursoSelect.value === 'medicina' && (!responsavelSelect.value || !motivoSelect.value)) {
+                    mostrarMensagem('Para Medicina, selecione responsável e motivo.', 'erro');
+                    return;
+                }
+                mostrarMensagem('Senha gerada com sucesso! Apresente-a no atendimento.', 'sucesso');
+                console.log('Dados enviados:', Object.fromEntries(new FormData(form))); 
+            });
+
+            function mostrarMensagem(texto, tipo) {
+                mensagem.textContent = texto;
+                mensagem.className = `mensagem ${tipo}`;
+            }
         });
     </script>
 </body>
