@@ -53,7 +53,7 @@
         
         .main-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.2fr 0.8fr;
             gap: 40px;
             max-width: 1200px;
             width: 100%;
@@ -133,7 +133,7 @@
             gap: 10px;
         }
         .lista-historico {
-            max-height: 200px;
+            max-height: 260px;
             overflow-y: auto;
             background: rgba(255,255,255,0.5);
             border-radius: 15px;
@@ -155,13 +155,32 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
+        .controle-top {
+            margin-bottom: 20px;
+        }
+        .controle-top label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+        .controle-top select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 15px;
+            outline: none;
+        }
+
         .controle-buttons {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            margin-top: 15px;
         }
         .btn {
-            padding: 20px 25px;
+            padding: 16px 22px;
             border: none;
             border-radius: 20px;
             font-size: 18px;
@@ -212,261 +231,4 @@
             background: linear-gradient(135deg, #fed7aa, #fdba74);
             color: #c05621;
             border: 2px solid #f6ad55;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 20px;
-            animation: pulseWarning 2s infinite;
-        }
-        @keyframes pulseWarning {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-        
-        .particulas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        .particula {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            animation: floatUp 8s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1); opacity: 0; }
-        }
-        
-        @media (max-width: 900px) { 
-            .main-container { 
-                grid-template-columns: 1fr; 
-                gap: 30px;
-                max-width: 500px;
-            }
-            .numero-senha { font-size: 60px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="particulas" id="particulas"></div>
-    
-    <div class="header">
-        <h1><i class="fas fa-headset"></i> Painel Atendente</h1>
-        <div class="status" id="status">Aguardando próxima senha...</div>
-    </div>
-    
-    <div class="main-container">
-        <div class="painel-senha">
-            <div class="senha-atual">
-                <div class="numero-senha" id="numeroSenha">000000</div>
-                <div class="info-senha" id="infoSenha">
-                    <i class="fas fa-clock"></i> Aguardando...
-                </div>
-            </div>
-            <div class="historico">
-                <h3><i class="fas fa-history"></i> Últimas Senhas</h3>
-                <div class="lista-historico" id="historico">
-                    <div style="text-align: center; color: #a0aec0; padding: 20px;">
-                        Nenhuma senha atendida
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="controle">
-            <div id="statusPausado" class="status-pausado" style="display: none;">
-                <i class="fas fa-pause-circle"></i> ATENDIMENTO PAUSADO
-            </div>
-            <div class="controle-buttons">
-                <button class="btn btn-prox" id="btnProx">
-                    <i class="fas fa-arrow-right"></i>
-                    Próxima Senha
-                </button>
-                <button class="btn btn-pausar" id="btnPausar">
-                    <i class="fas fa-pause"></i>
-                    Pausar Atendimento
-                </button>
-                <button class="btn btn-reset" id="btnReset">
-                    <i class="fas fa-redo"></i>
-                    Reiniciar Sistema
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SDK Firebase v8 -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script>
-      // 🔥 CONFIG FIREBASE (mesma do index)
-      const firebaseConfig = {
-        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
-        authDomain: "fila-coordenacao.firebaseapp.com",
-        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
-        projectId: "fila-coordenacao",
-        storageBucket: "fila-coordenacao.firebasestorage.app",
-        messagingSenderId: "302987735020",
-        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const database = firebase.database();
-    </script>
-
-    <script>
-        class PainelAtendente {
-            constructor() {
-                this.senhaAtual = 100000;
-                this.senhasHistorico = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
-                this.pausado = false;
-                this.init();
-            }
-            
-            init() {
-                this.criarParticulas();
-                this.renderizarHistorico();
-                this.bindEvents();
-                this.atualizarStatus();
-                this.escutarSenhaAtualFirebase();
-            }
-            
-            criarParticulas() {
-                const particulas = document.getElementById('particulas');
-                for (let i = 0; i < 60; i++) {
-                    const particula = document.createElement('div');
-                    particula.className = 'particula';
-                    particula.style.left = Math.random() * 100 + '%';
-                    particula.style.animationDelay = Math.random() * 8 + 's';
-                    particula.style.animationDuration = (Math.random() * 4 + 5) + 's';
-                    particulas.appendChild(particula);
-                }
-            }
-            
-            bindEvents() {
-                document.getElementById('btnProx').addEventListener('click', () => this.proximaSenha());
-                document.getElementById('btnPausar').addEventListener('click', () => this.togglePausar());
-                document.getElementById('btnReset').addEventListener('click', () => this.resetSistema());
-            }
-            
-            proximaSenha() {
-                if (this.pausado) return;
-                
-                this.senhaAtual++;
-                const senhaFormatada = this.senhaAtual.toString().padStart(6, '0');
-                
-                document.getElementById('numeroSenha').textContent = senhaFormatada;
-                document.getElementById('infoSenha').innerHTML = `
-                    <i class="fas fa-user-check"></i> 
-                    Chamando senha <strong>${senhaFormatada}</strong>
-                `;
-                
-                const numero = document.getElementById('numeroSenha');
-                numero.style.animation = 'none';
-                numero.offsetHeight;
-                numero.style.animation = 'pulseSenha 0.6s infinite';
-                
-                setTimeout(() => {
-                    numero.style.animation = 'pulseSenha 2s infinite';
-                }, 2000);
-                
-                this.adicionarHistorico(senhaFormatada);
-                this.atualizarStatus();
-            }
-            
-            adicionarHistorico(senha) {
-                const agora = new Date().toLocaleTimeString('pt-BR');
-                this.senhasHistorico.unshift({ senha, hora: agora });
-                if (this.senhasHistorico.length > 10) {
-                    this.senhasHistorico = this.senhasHistorico.slice(0, 10);
-                }
-                localStorage.setItem('historicoSenhas', JSON.stringify(this.senhasHistorico));
-                this.renderizarHistorico();
-            }
-            
-            renderizarHistorico() {
-                const historico = document.getElementById('historico');
-                if (this.senhasHistorico.length === 0) {
-                    historico.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nenhuma senha atendida</div>';
-                    return;
-                }
-                historico.innerHTML = this.senhasHistorico.map(item => 
-                    `<div class="item-historico">
-                        <span><i class="fas fa-ticket-alt"></i> ${item.senha}</span>
-                        <span style="color: #4a5568;">${item.hora}</span>
-                    </div>`
-                ).join('');
-            }
-            
-            togglePausar() {
-                this.pausado = !this.pausado;
-                const statusPausado = document.getElementById('statusPausado');
-                const btnPausar = document.getElementById('btnPausar');
-                
-                if (this.pausado) {
-                    statusPausado.style.display = 'block';
-                    btnPausar.innerHTML = '<i class="fas fa-play"></i> Retomar Atendimento';
-                } else {
-                    statusPausado.style.display = 'none';
-                    btnPausar.innerHTML = '<i class="fas fa-pause"></i> Pausar Atendimento';
-                }
-                this.atualizarStatus();
-            }
-            
-            resetSistema() {
-                if (confirm('Deseja reiniciar o sistema? Todas as senhas serão zeradas.')) {
-                    this.senhaAtual = 100000;
-                    this.senhasHistorico = [];
-                    localStorage.removeItem('historicoSenhas');
-                    document.getElementById('numeroSenha').textContent = '000000';
-                    document.getElementById('infoSenha').innerHTML = '<i class="fas fa-clock"></i> Aguardando...';
-                    this.renderizarHistorico();
-                    this.atualizarStatus();
-                }
-            }
-            
-            atualizarStatus() {
-                const status = document.getElementById('status');
-                if (this.pausado) {
-                    status.textContent = 'Atendimento pausado';
-                    status.style.color = '#ed8936';
-                } else {
-                    status.textContent = 'Clique em "Próxima Senha" para continuar';
-                    status.style.color = '#4a5568';
-                }
-            }
-
-            // 🔥 Ouve em tempo real o nó "senhaAtual" do Firebase
-            escutarSenhaAtualFirebase() {
-                database.ref('senhaAtual').on('value', (snapshot) => {
-                    const dados = snapshot.val();
-                    if (!dados) return;
-
-                    const numeroSenha = dados.senha || '000000';
-                    document.getElementById('numeroSenha').textContent = numeroSenha;
-
-                    document.getElementById('infoSenha').innerHTML = `
-                        <i class="fas fa-user"></i> <strong>${dados.nome || ''}</strong><br>
-                        Matrícula: ${dados.matricula || ''}<br>
-                        Curso: ${dados.curso || ''}<br>
-                        ${dados.responsavel ? 'Responsável: ' + dados.responsavel + '<br>' : ''}
-                        ${dados.motivo ? 'Motivo: ' + dados.motivo : ''}
-                    `;
-                });
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            new PainelAtendente();
-        });
-    </script>
-</body>
-</html>
+            pad
