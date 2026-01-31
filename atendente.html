@@ -3,689 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎧 Painel do Atendente - Chamadas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+    <title>🖥️ Painel Atendente - Controle de Senha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at top, #0f172a, #020617);
-            color: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(-45deg, #11998e, #38ef7d, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
             padding: 20px;
+            overflow-x: hidden;
         }
-
-        .wrapper {
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        h1 { 
+            color: #2c3e50; 
+            font-size: 36px; 
+            font-weight: 700;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .status { 
+            color: #4a5568; 
+            font-size: 18px; 
+            font-weight: 500;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
             width: 100%;
-            max-width: 900px;
-            background: rgba(15, 23, 42, 0.98);
-            border-radius: 20px;
-            padding: 22px 20px 20px;
-            box-shadow:
-                0 22px 50px rgba(15, 23, 42, 0.9),
-                0 0 0 1px rgba(148, 163, 184, 0.32);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .painel-senha, .controle { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(20px);
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
-            animation: wrapEnter 0.55s ease-out;
         }
-
-        .wrapper::before {
+        .painel-senha { 
+            border: 3px solid #11998e;
+            animation: glowGreen 2s ease-in-out infinite alternate;
+        }
+        @keyframes glowGreen {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(17,153,142,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(17,153,142,0.6); }
+        }
+        .controle { 
+            border: 3px solid #f093fb;
+            animation: glowPink 2s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes glowPink {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(240,147,251,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(240,147,251,0.6); }
+        }
+        
+        .senha-atual {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .numero-senha { 
+            font-family: 'Courier New', monospace; 
+            font-size: 80px; 
+            font-weight: 900; 
+            letter-spacing: 10px;
+            background: linear-gradient(135deg, #11998e, #38ef7d, #38a169);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: pulseSenha 2s infinite;
+            text-shadow: 0 0 30px rgba(17,153,142,0.5);
+        }
+        @keyframes pulseSenha {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(17,153,142,0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(17,153,142,0.8)); }
+        }
+        .info-senha {
+            background: linear-gradient(135deg, rgba(17,153,142,0.1), rgba(56,239,125,0.1));
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(17,153,142,0.3);
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .historico {
+            margin-top: 30px;
+        }
+        .historico h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lista-historico {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        .item-historico {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .controle-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .btn {
+            padding: 20px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
             content: '';
             position: absolute;
-            inset: -30%;
-            background:
-                radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.14), transparent 50%),
-                radial-gradient(circle at 90% 0%, rgba(236, 72, 153, 0.16), transparent 55%);
-            opacity: 0.9;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+        .btn-prox { 
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            box-shadow: 0 10px 30px rgba(17,153,142,0.4);
+        }
+        .btn-prox:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(17,153,142,0.6);
+        }
+        .btn-reset { 
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            box-shadow: 0 10px 30px rgba(240,147,251,0.4);
+        }
+        .btn-reset:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(240,147,251,0.6);
+        }
+        .btn-pausar { 
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+            box-shadow: 0 10px 30px rgba(237,137,54,0.4);
+        }
+        .status-pausado {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #c05621;
+            border: 2px solid #f6ad55;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: pulseWarning 2s infinite;
+        }
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: -1;
         }
-
-        @keyframes wrapEnter {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .title-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .title-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 16px;
-            background: radial-gradient(circle at 0 0, #3b82f6, #1d4ed8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.7);
-            animation: iconPulse 2.4s ease-in-out infinite;
-        }
-
-        @keyframes iconPulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 14px 28px rgba(37, 99, 235, 0.7);
-            }
-            50% {
-                transform: scale(1.06);
-                box-shadow: 0 20px 36px rgba(37, 99, 235, 0.4);
-            }
-        }
-
-        .title-text-main {
-            font-size: 1.14rem;
-            font-weight: 600;
-            color: #f9fafb;
-        }
-
-        .title-text-sub {
-            font-size: 0.8rem;
-            color: #9ca3af;
-        }
-
-        .status-pill {
-            padding: 6px 11px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            background: rgba(22, 163, 74, 0.18);
-            border: 1px solid rgba(34, 197, 94, 0.45);
-            color: #bbf7d0;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: #22c55e;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
-            animation: blinkStatus 1.2s infinite ease-in-out;
-        }
-
-        @keyframes blinkStatus {
-            0%, 100% {
-                opacity: 0.35;
-                transform: scale(0.9);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.08);
-            }
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 2.1fr 1.4fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: rgba(15, 23, 42, 0.95);
-            border-radius: 16px;
-            padding: 16px 14px 14px;
-            border: 1px solid rgba(148, 163, 184, 0.45);
-            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.92);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-size: 0.96rem;
-            font-weight: 500;
-            color: #e5e7eb;
-        }
-
-        .card-subtitle {
-            font-size: 0.76rem;
-            color: #9ca3af;
-        }
-
-        .big-number {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 0.075em;
-            color: #f9fafb;
-        }
-
-        .big-label {
-            font-size: 0.78rem;
-            color: #9ca3af;
-        }
-
-        .call-info {
-            margin-top: 10px;
-            font-size: 0.86rem;
-            line-height: 1.45;
-        }
-
-        .call-info-strong {
-            color: #bfdbfe;
-        }
-
-        .btn-row {
-            margin-top: 12px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-main, .btn-sec {
-            border-radius: 999px;
-            padding: 9px 14px;
-            font-size: 0.82rem;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            position: relative;
-            overflow: hidden;
-            transition:
-                transform 0.16s ease,
-                box-shadow 0.18s ease,
-                filter 0.2s ease,
-                background-position 0.4s ease;
-        }
-
-        .btn-main {
-            background: linear-gradient(135deg, #22c55e, #16a34a, #14b8a6);
-            color: #f9fafb;
-            background-size: 180% 180%;
-            box-shadow:
-                0 12px 26px rgba(34, 197, 94, 0.55),
-                0 0 0 1px rgba(34, 197, 94, 0.35);
-            animation: gradientMoveBtn 7s ease infinite;
-        }
-
-        @keyframes gradientMoveBtn {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .btn-main::after, .btn-sec::after {
-            content: '';
+        .particula {
             position: absolute;
-            top: -50%;
-            left: -20%;
-            width: 40%;
-            height: 200%;
-            background: linear-gradient(120deg, rgba(255, 255, 255, 0.7), transparent);
-            transform: translateX(-120%) skewX(-15deg);
-            opacity: 0;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: floatUp 8s infinite linear;
         }
-
-        .btn-main:hover::after, .btn-sec:hover::after {
-            animation: shineBtn 0.8s forwards;
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
         }
-
-        @keyframes shineBtn {
-            from {
-                transform: translateX(-120%) skewX(-15deg);
-                opacity: 0;
+        
+        @media (max-width: 900px) { 
+            .main-container { 
+                grid-template-columns: 1fr; 
+                gap: 30px;
+                max-width: 500px;
             }
-            to {
-                transform: translateX(210%) skewX(-15deg);
-                opacity: 1;
-            }
-        }
-
-        .btn-sec {
-            background: rgba(15, 23, 42, 0.95);
-            color: #e5e7eb;
-            border: 1px solid rgba(148, 163, 184, 0.75);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.85);
-        }
-
-        .btn-main:hover, .btn-sec:hover {
-            transform: translateY(-1px) scale(1.01);
-            filter: brightness(1.03);
-        }
-
-        .btn-main:active, .btn-sec:active {
-            transform: translateY(0) scale(0.985);
-            filter: brightness(0.97);
-            box-shadow: 0 7px 16px rgba(15, 23, 42, 0.9);
-        }
-
-        .btn-icon {
-            font-size: 1rem;
-        }
-
-        .queue-list {
-            margin-top: 8px;
-            border-radius: 12px;
-            border: 1px solid rgba(55, 65, 81, 0.9);
-            background: rgba(15, 23, 42, 0.96);
-            max-height: 280px;
-            overflow: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.78rem;
-        }
-
-        th, td {
-            padding: 7px 9px;
-            text-align: left;
-            border-bottom: 1px solid rgba(31, 41, 55, 0.95);
-        }
-
-        th {
-            position: sticky;
-            top: 0;
-            background: rgba(15, 23, 42, 0.98);
-            z-index: 1;
-            font-weight: 500;
-            color: #9ca3af;
-            font-size: 0.76rem;
-        }
-
-        tbody tr {
-            transition: background-color 0.18s ease, transform 0.12s ease;
-        }
-
-        tbody tr:hover {
-            background-color: rgba(31, 41, 55, 0.9);
-            transform: translateY(-1px);
-        }
-
-        .badge-status {
-            padding: 3px 7px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-        }
-
-        .badge-aguardando {
-            background: rgba(59, 130, 246, 0.18);
-            border: 1px solid rgba(59, 130, 246, 0.65);
-            color: #bfdbfe;
-        }
-
-        .badge-atendido {
-            background: rgba(22, 163, 74, 0.16);
-            border: 1px solid rgba(34, 197, 94, 0.7);
-            color: #bbf7d0;
-        }
-
-        .subtitle-queue {
-            font-size: 0.78rem;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-
-        .empty-text {
-            font-size: 0.8rem;
-            color: #6b7280;
-            padding: 12px;
-            text-align: center;
-        }
-
-        /* Destaque quando nova senha é chamada */
-        .highlight-call {
-            animation: callFlash 1.5s ease-in-out 1;
-        }
-
-        @keyframes callFlash {
-            0% {
-                box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.05);
-                background: rgba(23, 37, 84, 0.9);
-            }
-            30% {
-                box-shadow: 0 0 0 10px rgba(250, 204, 21, 0.02);
-                background: rgba(30, 64, 175, 0.9);
-            }
-            70% {
-                box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.0);
-                background: rgba(17, 24, 39, 0.96);
-            }
-            100% {
-                box-shadow: none;
-                background: rgba(15, 23, 42, 0.95);
-            }
-        }
-
-        .log-area {
-            margin-top: 10px;
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        .log-entry {
-            margin-top: 4px;
+            .numero-senha { font-size: 60px; }
         }
     </style>
 </head>
 <body>
-    <div class="wrapper" id="wrapper">
-        <div class="top-bar">
-            <div class="title-block">
-                <div class="title-icon">🎧</div>
-                <div>
-                    <div class="title-text-main">Painel do Atendente</div>
-                    <div class="title-text-sub">Acompanhe a fila, chame o próximo e visualize os dados do aluno.</div>
+    <div class="particulas" id="particulas"></div>
+    
+    <div class="header">
+        <h1><i class="fas fa-headset"></i> Painel Atendente</h1>
+        <div class="status" id="status">Aguardando próxima senha...</div>
+    </div>
+    
+    <div class="main-container">
+        <div class="painel-senha">
+            <div class="senha-atual">
+                <div class="numero-senha" id="numeroSenha">000000</div>
+                <div class="info-senha" id="infoSenha">
+                    <i class="fas fa-clock"></i> Aguardando...
                 </div>
             </div>
-            <div class="status-pill">
-                <span class="status-dot"></span>
-                <span>Online com Firebase</span>
+            <div class="historico">
+                <h3><i class="fas fa-history"></i> Últimas Senhas</h3>
+                <div class="lista-historico" id="historico">
+                    <div style="text-align: center; color: #a0aec0; padding: 20px;">
+                        Nenhuma senha atendida
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="grid">
-            <!-- Bloco principal: senha atual -->
-            <div class="card" id="cardAtual">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Senha atual</div>
-                        <div class="card-subtitle">Dados do aluno sendo atendido</div>
-                    </div>
-                    <div>
-                        <div id="senhaAtual" class="big-number">---</div>
-                        <div class="big-label">Senha</div>
-                    </div>
-                </div>
-
-                <div id="dadosAluno" class="call-info">
-                    Nenhum aluno em atendimento no momento.
-                </div>
-
-                <div class="btn-row">
-                    <button class="btn-main" id="btnChamar">
-                        <span class="btn-icon">📢</span>
-                        <span>Chamar Próximo</span>
-                    </button>
-                    <button class="btn-sec" id="btnFinalizar">
-                        <span class="btn-icon">✅</span>
-                        <span>Finalizar Atendimento</span>
-                    </button>
-                </div>
-
-                <div class="log-area" id="logArea"></div>
+        
+        <div class="controle">
+            <div id="statusPausado" class="status-pausado" style="display: none;">
+                <i class="fas fa-pause-circle"></i> ATENDIMENTO PAUSADO
             </div>
-
-            <!-- Bloco lateral: fila -->
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Fila de espera</div>
-                        <div class="card-subtitle">Alunos aguardando atendimento</div>
-                    </div>
-                </div>
-
-                <div class="queue-list">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Senha</th>
-                                <th>Nome</th>
-                                <th>Curso</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyFila">
-                            <tr>
-                                <td colspan="4" class="empty-text">Carregando fila...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="subtitle-queue">
-                    A lista é atualizada automaticamente conforme os alunos geram e finalizam senhas.
-                </div>
+            <div class="controle-buttons">
+                <button class="btn btn-prox" id="btnProx">
+                    <i class="fas fa-arrow-right"></i>
+                    Próxima Senha
+                </button>
+                <button class="btn btn-pausar" id="btnPausar">
+                    <i class="fas fa-pause"></i>
+                    Pausar Atendimento
+                </button>
+                <button class="btn btn-reset" id="btnReset">
+                    <i class="fas fa-redo"></i>
+                    Reiniciar Sistema
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase v8 -->
+    <!-- SDK Firebase v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+      // 🔥 CONFIG FIREBASE (mesma do index)
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
+        authDomain: "fila-coordenacao.firebaseapp.com",
+        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
+        projectId: "fila-coordenacao",
+        storageBucket: "fila-coordenacao.firebasestorage.app",
+        messagingSenderId: "302987735020",
+        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
 
     <script>
-        // TODO: mesma config do index.html
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_AUTH_DOMAIN",
-            databaseURL: "SUA_DATABASE_URL",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_BUCKET",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        const senhaAtualEl = document.getElementById('senhaAtual');
-        const dadosAlunoEl = document.getElementById('dadosAluno');
-        const tbodyFila = document.getElementById('tbodyFila');
-        const btnChamar = document.getElementById('btnChamar');
-        const btnFinalizar = document.getElementById('btnFinalizar');
-        const cardAtual = document.getElementById('cardAtual');
-        const logArea = document.getElementById('logArea');
-
-        let senhaAtualId = null;
-        let filaCache = {};
-
-        function addLog(mensagem) {
-            const hora = new Date().toLocaleTimeString('pt-BR', { hour12: false });
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            div.textContent = `[${hora}] ${mensagem}`;
-            logArea.prepend(div);
-        }
-
-        function atualizarTabelaFila() {
-            tbodyFila.innerHTML = '';
-
-            const chaves = Object.keys(filaCache);
-            if (chaves.length === 0) {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = 4;
-                td.className = 'empty-text';
-                td.textContent = 'Nenhum aluno aguardando na fila.';
-                tr.appendChild(td);
-                tbodyFila.appendChild(tr);
-                return;
+        class PainelAtendente {
+            constructor() {
+                this.senhaAtual = 100000;
+                this.senhasHistorico = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
+                this.pausado = false;
+                this.init();
             }
-
-            // ordenar por timestamp asc
-            chaves.sort((a, b) => {
-                return (filaCache[a].timestamp || 0) - (filaCache[b].timestamp || 0);
-            });
-
-            chaves.forEach(key => {
-                const dados = filaCache[key];
-                const tr = document.createElement('tr');
-
-                const tdSenha = document.createElement('td');
-                tdSenha.textContent = dados.senha || '---';
-
-                const tdNome = document.createElement('td');
-                tdNome.textContent = dados.nome || '-';
-
-                const tdCurso = document.createElement('td');
-                tdCurso.textContent = dados.curso || '-';
-
-                const tdStatus = document.createElement('td');
-                const spanStatus = document.createElement('span');
-                spanStatus.classList.add('badge-status');
-                if (dados.status === 'atendido') {
-                    spanStatus.classList.add('badge-atendido');
-                    spanStatus.textContent = 'Atendido';
-                } else {
-                    spanStatus.classList.add('badge-aguardando');
-                    spanStatus.textContent = 'Aguardando';
+            
+            init() {
+                this.criarParticulas();
+                this.renderizarHistorico();
+                this.bindEvents();
+                this.atualizarStatus();
+                this.escutarSenhaAtualFirebase();
+            }
+            
+            criarParticulas() {
+                const particulas = document.getElementById('particulas');
+                for (let i = 0; i < 60; i++) {
+                    const particula = document.createElement('div');
+                    particula.className = 'particula';
+                    particula.style.left = Math.random() * 100 + '%';
+                    particula.style.animationDelay = Math.random() * 8 + 's';
+                    particula.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                    particulas.appendChild(particula);
                 }
-                tdStatus.appendChild(spanStatus);
-
-                tr.appendChild(tdSenha);
-                tr.appendChild(tdNome);
-                tr.appendChild(tdCurso);
-                tr.appendChild(tdStatus);
-
-                tbodyFila.appendChild(tr);
-            });
-        }
-
-        // Observa filaSenhas em tempo real
-        database.ref('filaSenhas').on('value', (snapshot) => {
-            filaCache = snapshot.val() || {};
-            atualizarTabelaFila();
-        });
-
-        // Observa proximaSenha em tempo real (caso outro atendente use também)
-        database.ref('proximaSenha').on('value', (snapshot) => {
-            const proxima = snapshot.val();
-            if (!proxima || !proxima.id) {
-                // nada pendente
-                return;
             }
-            // não chamamos aqui automaticamente para não bagunçar fluxo de botão
-        });
-
-        btnChamar.addEventListener('click', async () => {
-            try {
-                // busca a fila atual
-                const snap = await database.ref('filaSenhas').once('value');
-                const fila = snap.val() || {};
-                const chaves = Object.keys(fila);
-
-                if (chaves.length === 0) {
-                    addLog('Tentativa de chamar próximo sem alunos na fila.');
-                    cardAtual.classList.remove('highlight-call');
-                    void cardAtual.offsetWidth;
-                    cardAtual.classList.add('highlight-call');
+            
+            bindEvents() {
+                document.getElementById('btnProx').addEventListener('click', () => this.proximaSenha());
+                document.getElementById('btnPausar').addEventListener('click', () => this.togglePausar());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetSistema());
+            }
+            
+            proximaSenha() {
+                if (this.pausado) return;
+                
+                this.senhaAtual++;
+                const senhaFormatada = this.senhaAtual.toString().padStart(6, '0');
+                
+                document.getElementById('numeroSenha').textContent = senhaFormatada;
+                document.getElementById('infoSenha').innerHTML = `
+                    <i class="fas fa-user-check"></i> 
+                    Chamando senha <strong>${senhaFormatada}</strong>
+                `;
+                
+                const numero = document.getElementById('numeroSenha');
+                numero.style.animation = 'none';
+                numero.offsetHeight;
+                numero.style.animation = 'pulseSenha 0.6s infinite';
+                
+                setTimeout(() => {
+                    numero.style.animation = 'pulseSenha 2s infinite';
+                }, 2000);
+                
+                this.adicionarHistorico(senhaFormatada);
+                this.atualizarStatus();
+            }
+            
+            adicionarHistorico(senha) {
+                const agora = new Date().toLocaleTimeString('pt-BR');
+                this.senhasHistorico.unshift({ senha, hora: agora });
+                if (this.senhasHistorico.length > 10) {
+                    this.senhasHistorico = this.senhasHistorico.slice(0, 10);
+                }
+                localStorage.setItem('historicoSenhas', JSON.stringify(this.senhasHistorico));
+                this.renderizarHistorico();
+            }
+            
+            renderizarHistorico() {
+                const historico = document.getElementById('historico');
+                if (this.senhasHistorico.length === 0) {
+                    historico.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nenhuma senha atendida</div>';
                     return;
                 }
-
-                // ordena por timestamp
-                chaves.sort((a, b) => {
-                    return (fila[a].timestamp || 0) - (fila[b].timestamp || 0);
-                });
-
-                const primeiraChave = chaves[0];
-                const dados = fila[primeiraChave];
-
-                senhaAtualId = primeiraChave;
-
-                // atualiza UI
-                senhaAtualEl.textContent = dados.senha || '---';
-                dadosAlunoEl.innerHTML = `
-                    <span class="call-info-strong">Aluno:</span> ${dados.nome || '-'}<br>
-                    Matrícula: ${dados.matricula || '-'}<br>
-                    Curso: ${dados.curso || '-'}<br>
-                    ${dados.responsavel ? 'Responsável: ' + dados.responsavel + '<br>' : ''}
-                    ${dados.motivo ? 'Motivo: ' + dados.motivo : ''}
-                `;
-
-                cardAtual.classList.remove('highlight-call');
-                void cardAtual.offsetWidth;
-                cardAtual.classList.add('highlight-call');
-
-                addLog(`Chamando próxima senha: ${dados.senha} - ${dados.nome || ''}`);
-
-                // marca esta senha como proximaSenha
-                await database.ref('proximaSenha').set({
-                    id: primeiraChave,
-                    senha: dados.senha
-                });
-            } catch (err) {
-                console.error(err);
-                addLog('Erro ao chamar próximo aluno.');
+                historico.innerHTML = this.senhasHistorico.map(item => 
+                    `<div class="item-historico">
+                        <span><i class="fas fa-ticket-alt"></i> ${item.senha}</span>
+                        <span style="color: #4a5568;">${item.hora}</span>
+                    </div>`
+                ).join('');
             }
-        });
-
-        btnFinalizar.addEventListener('click', async () => {
-            if (!senhaAtualId) {
-                addLog('Nenhuma senha atual para finalizar.');
-                return;
-            }
-
-            try {
-                const refSenha = database.ref('filaSenhas/' + senhaAtualId);
-                const snap = await refSenha.once('value');
-                const dados = snap.val();
-
-                if (!dados) {
-                    addLog('A senha atual não existe mais na fila.');
+            
+            togglePausar() {
+                this.pausado = !this.pausado;
+                const statusPausado = document.getElementById('statusPausado');
+                const btnPausar = document.getElementById('btnPausar');
+                
+                if (this.pausado) {
+                    statusPausado.style.display = 'block';
+                    btnPausar.innerHTML = '<i class="fas fa-play"></i> Retomar Atendimento';
                 } else {
-                    // move para histórico
-                    await database.ref('historico').push({
-                        ...dados,
-                        status: 'atendido',
-                        finalizadoEm: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    await refSenha.remove();
-                    addLog(`Atendimento finalizado para a senha: ${dados.senha}`);
+                    statusPausado.style.display = 'none';
+                    btnPausar.innerHTML = '<i class="fas fa-pause"></i> Pausar Atendimento';
                 }
-
-                // limpa proximaSenha se for esta
-                const proxSnap = await database.ref('proximaSenha').once('value');
-                const prox = proxSnap.val();
-                if (prox && prox.id === senhaAtualId) {
-                    await database.ref('proximaSenha').remove();
-                }
-
-                senhaAtualId = null;
-                senhaAtualEl.textContent = '---';
-                dadosAlunoEl.textContent = 'Nenhum aluno em atendimento no momento.';
-            } catch (err) {
-                console.error(err);
-                addLog('Erro ao finalizar atendimento.');
+                this.atualizarStatus();
             }
+            
+            resetSistema() {
+                if (confirm('Deseja reiniciar o sistema? Todas as senhas serão zeradas.')) {
+                    this.senhaAtual = 100000;
+                    this.senhasHistorico = [];
+                    localStorage.removeItem('historicoSenhas');
+                    document.getElementById('numeroSenha').textContent = '000000';
+                    document.getElementById('infoSenha').innerHTML = '<i class="fas fa-clock"></i> Aguardando...';
+                    this.renderizarHistorico();
+                    this.atualizarStatus();
+                }
+            }
+            
+            atualizarStatus() {
+                const status = document.getElementById('status');
+                if (this.pausado) {
+                    status.textContent = 'Atendimento pausado';
+                    status.style.color = '#ed8936';
+                } else {
+                    status.textContent = 'Clique em "Próxima Senha" para continuar';
+                    status.style.color = '#4a5568';
+                }
+            }
+
+            // 🔥 Ouve em tempo real o nó "senhaAtual" do Firebase
+            escutarSenhaAtualFirebase() {
+                database.ref('senhaAtual').on('value', (snapshot) => {
+                    const dados = snapshot.val();
+                    if (!dados) return;
+
+                    const numeroSenha = dados.senha || '000000';
+                    document.getElementById('numeroSenha').textContent = numeroSenha;
+
+                    document.getElementById('infoSenha').innerHTML = `
+                        <i class="fas fa-user"></i> <strong>${dados.nome || ''}</strong><br>
+                        Matrícula: ${dados.matricula || ''}<br>
+                        Curso: ${dados.curso || ''}<br>
+                        ${dados.responsavel ? 'Responsável: ' + dados.responsavel + '<br>' : ''}
+                        ${dados.motivo ? 'Motivo: ' + dados.motivo : ''}
+                    `;
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new PainelAtendente();
         });
     </script>
 </body>
