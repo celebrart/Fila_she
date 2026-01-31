@@ -2,57 +2,435 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Atendente</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖥️ Painel Atendente - Controle de Senha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f4f7f6; text-align: center; padding: 50px; }
-        .painel { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; min-width: 300px; }
-        .numero { font-size: 80px; color: #11998e; margin: 20px 0; font-weight: bold; }
-        button { padding: 15px 30px; background: #11998e; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; }
-        button:hover { background: #0e867d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(-45deg, #11998e, #38ef7d, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        h1 { 
+            color: #2c3e50; 
+            font-size: 36px; 
+            font-weight: 700;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .status { 
+            color: #4a5568; 
+            font-size: 18px; 
+            font-weight: 500;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .painel-senha, .controle { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(20px);
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .painel-senha { 
+            border: 3px solid #11998e;
+            animation: glowGreen 2s ease-in-out infinite alternate;
+        }
+        @keyframes glowGreen {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(17,153,142,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(17,153,142,0.6); }
+        }
+        .controle { 
+            border: 3px solid #f093fb;
+            animation: glowPink 2s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes glowPink {
+            from { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 30px rgba(240,147,251,0.3); }
+            to { box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 50px rgba(240,147,251,0.6); }
+        }
+        
+        .senha-atual {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .numero-senha { 
+            font-family: 'Courier New', monospace; 
+            font-size: 80px; 
+            font-weight: 900; 
+            letter-spacing: 10px;
+            background: linear-gradient(135deg, #11998e, #38ef7d, #38a169);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: pulseSenha 2s infinite;
+            text-shadow: 0 0 30px rgba(17,153,142,0.5);
+        }
+        @keyframes pulseSenha {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(17,153,142,0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(17,153,142,0.8)); }
+        }
+        .info-senha {
+            background: linear-gradient(135deg, rgba(17,153,142,0.1), rgba(56,239,125,0.1));
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(17,153,142,0.3);
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .historico {
+            margin-top: 30px;
+        }
+        .historico h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lista-historico {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        .item-historico {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .controle-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .btn {
+            padding: 20px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+        .btn-prox { 
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            box-shadow: 0 10px 30px rgba(17,153,142,0.4);
+        }
+        .btn-prox:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(17,153,142,0.6);
+        }
+        .btn-reset { 
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            box-shadow: 0 10px 30px rgba(240,147,251,0.4);
+        }
+        .btn-reset:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(240,147,251,0.6);
+        }
+        .btn-pausar { 
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+            box-shadow: 0 10px 30px rgba(237,137,54,0.4);
+        }
+        .status-pausado {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #c05621;
+            border: 2px solid #f6ad55;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: pulseWarning 2s infinite;
+        }
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particula {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: floatUp 8s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        
+        @media (max-width: 900px) { 
+            .main-container { 
+                grid-template-columns: 1fr; 
+                gap: 30px;
+                max-width: 500px;
+            }
+            .numero-senha { font-size: 60px; }
+        }
     </style>
 </head>
 <body>
-    <div class="painel">
-        <h1>Senha Atual</h1>
-        <div class="numero" id="numExibido">000000</div>
-        <p id="infoNome">Aguardando chamada...</p>
-        <button id="btnProx">PRÓXIMA SENHA</button>
+    <div class="particulas" id="particulas"></div>
+    
+    <div class="header">
+        <h1><i class="fas fa-headset"></i> Painel Atendente</h1>
+        <div class="status" id="status">Aguardando próxima senha...</div>
+    </div>
+    
+    <div class="main-container">
+        <div class="painel-senha">
+            <div class="senha-atual">
+                <div class="numero-senha" id="numeroSenha">000000</div>
+                <div class="info-senha" id="infoSenha">
+                    <i class="fas fa-clock"></i> Aguardando...
+                </div>
+            </div>
+            <div class="historico">
+                <h3><i class="fas fa-history"></i> Últimas Senhas</h3>
+                <div class="lista-historico" id="historico">
+                    <div style="text-align: center; color: #a0aec0; padding: 20px;">
+                        Nenhuma senha atendida
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controle">
+            <div id="statusPausado" class="status-pausado" style="display: none;">
+                <i class="fas fa-pause-circle"></i> ATENDIMENTO PAUSADO
+            </div>
+            <div class="controle-buttons">
+                <button class="btn btn-prox" id="btnProx">
+                    <i class="fas fa-arrow-right"></i>
+                    Próxima Senha
+                </button>
+                <button class="btn btn-pausar" id="btnPausar">
+                    <i class="fas fa-pause"></i>
+                    Pausar Atendimento
+                </button>
+                <button class="btn btn-reset" id="btnReset">
+                    <i class="fas fa-redo"></i>
+                    Reiniciar Sistema
+                </button>
+            </div>
+        </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
-            authDomain: "fila-coordenacao.firebaseapp.com",
-            databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
-            projectId: "fila-coordenacao",
-            storageBucket: "fila-coordenacao.firebasestorage.app",
-            messagingSenderId: "302987735020",
-            appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        document.getElementById('btnProx').onclick = function() {
-            // Busca a senha mais antiga que está aguardando
-            database.ref('fila').orderByChild('status').equalTo('aguardando').limitToFirst(1).once('value', snapshot => {
-                if (!snapshot.exists()) {
-                    alert("Fila vazia!");
+        class PainelAtendente {
+            constructor() {
+                this.senhaAtual = 100000;
+                this.senhasHistorico = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
+                this.pausado = false;
+                this.init();
+            }
+            
+            init() {
+                this.criarParticulas();
+                this.renderizarHistorico();
+                this.bindEvents();
+                this.atualizarStatus();
+            }
+            
+            criarParticulas() {
+                const particulas = document.getElementById('particulas');
+                for (let i = 0; i < 60; i++) {
+                    const particula = document.createElement('div');
+                    particula.className = 'particula';
+                    particula.style.left = Math.random() * 100 + '%';
+                    particula.style.animationDelay = Math.random() * 8 + 's';
+                    particula.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                    particulas.appendChild(particula);
+                }
+            }
+            
+            bindEvents() {
+                document.getElementById('btnProx').addEventListener('click', () => this.proximaSenha());
+                document.getElementById('btnPausar').addEventListener('click', () => this.togglePausar());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetSistema());
+            }
+            
+            proximaSenha() {
+                if (this.pausado) return;
+                
+                this.senhaAtual++;
+                const senhaFormatada = this.senhaAtual.toString().padStart(6, '0');
+                
+                document.getElementById('numeroSenha').textContent = senhaFormatada;
+                document.getElementById('infoSenha').innerHTML = `
+                    <i class="fas fa-user-check"></i> 
+                    Chamando senha <strong>${senhaFormatada}</strong>
+                `;
+                
+                // Animação de chamada
+                const numero = document.getElementById('numeroSenha');
+                numero.style.animation = 'none';
+                numero.offsetHeight;
+                numero.style.animation = 'pulseSenha 0.6s infinite';
+                
+                setTimeout(() => {
+                    numero.style.animation = 'pulseSenha 2s infinite';
+                }, 2000);
+                
+                this.adicionarHistorico(senhaFormatada);
+                this.atualizarStatus();
+            }
+            
+            adicionarHistorico(senha) {
+                const agora = new Date().toLocaleTimeString('pt-BR');
+                this.senhasHistorico.unshift({ senha, hora: agora });
+                if (this.senhasHistorico.length > 10) {
+                    this.senhasHistorico = this.senhasHistorico.slice(0, 10);
+                }
+                localStorage.setItem('historicoSenhas', JSON.stringify(this.senhasHistorico));
+                this.renderizarHistorico();
+            }
+            
+            renderizarHistorico() {
+                const historico = document.getElementById('historico');
+                if (this.senhasHistorico.length === 0) {
+                    historico.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nenhuma senha atendida</div>';
                     return;
                 }
-                snapshot.forEach(child => {
-                    const dados = child.val();
-                    document.getElementById('numExibido').innerText = dados.senha;
-                    document.getElementById('infoNome').innerText = "Chamando: " + dados.nome;
-                    
-                    // Marca como atendido no banco para não repetir
-                    database.ref('fila/' + child.key).update({ status: 'atendido' });
-                });
-            });
-        };
+                historico.innerHTML = this.senhasHistorico.map(item => 
+                    `<div class="item-historico">
+                        <span><i class="fas fa-ticket-alt"></i> ${item.senha}</span>
+                        <span style="color: #4a5568;">${item.hora}</span>
+                    </div>`
+                ).join('');
+            }
+            
+            togglePausar() {
+                this.pausado = !this.pausado;
+                const statusPausado = document.getElementById('statusPausado');
+                const btnPausar = document.getElementById('btnPausar');
+                
+                if (this.pausado) {
+                    statusPausado.style.display = 'block';
+                    btnPausar.innerHTML = '<i class="fas fa-play"></i> Retomar Atendimento';
+                } else {
+                    statusPausado.style.display = 'none';
+                    btnPausar.innerHTML = '<i class="fas fa-pause"></i> Pausar Atendimento';
+                }
+                this.atualizarStatus();
+            }
+            
+            resetSistema() {
+                if (confirm('Deseja reiniciar o sistema? Todas as senhas serão zeradas.')) {
+                    this.senhaAtual = 100000;
+                    this.senhasHistorico = [];
+                    localStorage.removeItem('historicoSenhas');
+                    document.getElementById('numeroSenha').textContent = '000000';
+                    document.getElementById('infoSenha').innerHTML = '<i class="fas fa-clock"></i> Aguardando...';
+                    this.renderizarHistorico();
+                    this.atualizarStatus();
+                }
+            }
+            
+            atualizarStatus() {
+                const status = document.getElementById('status');
+                if (this.pausado) {
+                    status.textContent = 'Atendimento pausado';
+                    status.style.color = '#ed8936';
+                } else {
+                    status.textContent = 'Clique em "Próxima Senha" para continuar';
+                    status.style.color = '#4a5568';
+                }
+            }
+        }
+        
+        // Inicializa o painel
+        document.addEventListener('DOMContentLoaded', () => {
+            new PainelAtendente();
+        });
     </script>
 </body>
 </html>
