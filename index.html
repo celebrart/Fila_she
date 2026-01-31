@@ -310,11 +310,10 @@
         <div id="mensagem" class="mensagem"></div>
     </div>
 
-    <!-- SDK Firebase v8 (compatível com firebase.database) -->
+    <!-- SDK Firebase v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-      // 🔥 CONFIG FIREBASE
       const firebaseConfig = {
         apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
         authDomain: "fila-coordenacao.firebaseapp.com",
@@ -329,7 +328,6 @@
     </script>
 
     <script>
-        // Partículas de fundo
         function criarParticulas() {
             const particulas = document.getElementById('particulas');
             for (let i = 0; i < 50; i++) {
@@ -353,12 +351,10 @@
             const form = document.getElementById('formSenha');
             const mensagem = document.getElementById('mensagem');
 
-            // Efeito de digitação na senha
             senhaInput.addEventListener('focus', function() {
                 if (!this.value) gerarSenha();
             });
 
-            // Mostra/esconde seção Medicina
             cursoSelect.addEventListener('change', function() {
                 if (this.value === 'medicina') {
                     secaoMedicina.style.animation = 'none';
@@ -391,7 +387,7 @@
                 senhaInput.style.animation = 'none';
                 senhaInput.offsetHeight;
                 senhaInput.value = '';
-                const senha = Math.floor(100000 + Math.random() * 900000);
+                const senha = gerarNumeroSenha();
                 let i = 0;
                 const digitar = setInterval(() => {
                     senhaInput.value = senha.toString().slice(0, i);
@@ -403,8 +399,12 @@
                 }, 100);
             }
 
+            function gerarNumeroSenha() {
+                return Math.floor(100000 + Math.random() * 900000);
+            }
+
             function gerarSenha() {
-                const senha = Math.floor(100000 + Math.random() * 900000);
+                const senha = gerarNumeroSenha();
                 senhaInput.value = senha;
             }
 
@@ -426,7 +426,8 @@
                     return;
                 }
 
-                // Monta objeto com os dados do aluno
+                if (!senhaInput.value) gerarSenha();
+
                 const dados = {
                     nome: document.getElementById('nome').value,
                     matricula: document.getElementById('matricula').value,
@@ -434,20 +435,14 @@
                     responsavel: document.getElementById('responsavel').value || null,
                     motivo: document.getElementById('motivo').value || null,
                     senha: document.getElementById('senha').value,
-                    dataHora: new Date().toISOString()
+                    status: 'aguardando',
+                    timestamp: Date.now()
                 };
 
-                // Garante que a senha exista
-                if (!dados.senha) {
-                    gerarSenha();
-                    dados.senha = document.getElementById('senha').value;
-                }
-
-                // Salva em "senhaAtual" no Realtime Database
-                database.ref('senhaAtual').set(dados)
+                database.ref('fila').push(dados)  // cada aluno vira um item na fila[web:21][web:32]
                     .then(() => {
                         mostrarMensagem('✅ Senha gerada com sucesso! Apresente-a no atendimento.', 'sucesso');
-                        console.log('Dados enviados para o Firebase:', dados);
+                        console.log('Dados enviados para a fila:', dados);
                     })
                     .catch((error) => {
                         console.error('Erro ao salvar no Firebase:', error);
@@ -465,7 +460,6 @@
                 }, 4000);
             }
 
-            // Adiciona estilo pulse para senha
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes pulse {
