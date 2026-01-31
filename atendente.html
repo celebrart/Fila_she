@@ -304,6 +304,24 @@
         </div>
     </div>
 
+    <!-- SDK Firebase v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+      // 🔥 CONFIG FIREBASE (mesma do index)
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
+        authDomain: "fila-coordenacao.firebaseapp.com",
+        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
+        projectId: "fila-coordenacao",
+        storageBucket: "fila-coordenacao.firebasestorage.app",
+        messagingSenderId: "302987735020",
+        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+
     <script>
         class PainelAtendente {
             constructor() {
@@ -318,6 +336,7 @@
                 this.renderizarHistorico();
                 this.bindEvents();
                 this.atualizarStatus();
+                this.escutarSenhaAtualFirebase();
             }
             
             criarParticulas() {
@@ -350,7 +369,6 @@
                     Chamando senha <strong>${senhaFormatada}</strong>
                 `;
                 
-                // Animação de chamada
                 const numero = document.getElementById('numeroSenha');
                 numero.style.animation = 'none';
                 numero.offsetHeight;
@@ -425,9 +443,27 @@
                     status.style.color = '#4a5568';
                 }
             }
+
+            // 🔥 Ouve em tempo real o nó "senhaAtual" do Firebase
+            escutarSenhaAtualFirebase() {
+                database.ref('senhaAtual').on('value', (snapshot) => {
+                    const dados = snapshot.val();
+                    if (!dados) return;
+
+                    const numeroSenha = dados.senha || '000000';
+                    document.getElementById('numeroSenha').textContent = numeroSenha;
+
+                    document.getElementById('infoSenha').innerHTML = `
+                        <i class="fas fa-user"></i> <strong>${dados.nome || ''}</strong><br>
+                        Matrícula: ${dados.matricula || ''}<br>
+                        Curso: ${dados.curso || ''}<br>
+                        ${dados.responsavel ? 'Responsável: ' + dados.responsavel + '<br>' : ''}
+                        ${dados.motivo ? 'Motivo: ' + dados.motivo : ''}
+                    `;
+                });
+            }
         }
         
-        // Inicializa o painel
         document.addEventListener('DOMContentLoaded', () => {
             new PainelAtendente();
         });
