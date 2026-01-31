@@ -231,4 +231,339 @@
             background: linear-gradient(135deg, #fed7aa, #fdba74);
             color: #c05621;
             border: 2px solid #f6ad55;
-            pad
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: pulseWarning 2s infinite;
+        }
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particula {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: floatUp 8s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        
+        @media (max-width: 900px) { 
+            .main-container { 
+                grid-template-columns: 1fr; 
+                gap: 30px;
+                max-width: 500px;
+            }
+            .numero-senha { font-size: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particulas" id="particulas"></div>
+    
+    <div class="header">
+        <h1><i class="fas fa-headset"></i> Painel Atendente</h1>
+        <div class="status" id="status">Selecione um curso e clique em "Próxima Senha".</div>
+    </div>
+    
+    <div class="main-container">
+        <div class="painel-senha">
+            <div class="senha-atual">
+                <div class="numero-senha" id="numeroSenha">000000</div>
+                <div class="info-senha" id="infoSenha">
+                    <i class="fas fa-clock"></i> Aguardando solicitação...
+                </div>
+            </div>
+            <div class="historico">
+                <h3><i class="fas fa-history"></i> Últimos Atendimentos</h3>
+                <div class="lista-historico" id="historico">
+                    <div style="text-align: center; color: #a0aec0; padding: 20px;">
+                        Nenhuma senha atendida
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controle">
+            <div class="controle-top">
+                <label for="filtroCurso"><i class="fas fa-filter"></i> Filtrar fila por curso</label>
+                <select id="filtroCurso">
+                    <option value="">Todos os cursos</option>
+                    <option value="medicina">🩺 Medicina</option>
+                    <option value="enfermagem">🩺 Enfermagem</option>
+                    <option value="odontologia">🦷 Odontologia</option>
+                    <option value="fisioterapia">💪 Fisioterapia</option>
+                    <option value="nutricao">🥗 Nutrição</option>
+                    <option value="psicologia">🧠 Psicologia</option>
+                    <option value="direito">⚖️ Direito</option>
+                    <option value="engenharia">🔧 Engenharia</option>
+                    <option value="administracao">📊 Administração</option>
+                    <option value="contabilidade">💰 Contabilidade</option>
+                    <option value="pedagogia">📚 Pedagogia</option>
+                    <option value="outros">📖 Outros</option>
+                </select>
+            </div>
+
+            <div id="statusPausado" class="status-pausado" style="display: none;">
+                <i class="fas fa-pause-circle"></i> ATENDIMENTO PAUSADO
+            </div>
+
+            <div class="controle-buttons">
+                <button class="btn btn-prox" id="btnProx">
+                    <i class="fas fa-arrow-right"></i>
+                    Próxima Senha
+                </button>
+                <button class="btn btn-pausar" id="btnPausar">
+                    <i class="fas fa-pause"></i>
+                    Pausar Atendimento
+                </button>
+                <button class="btn btn-reset" id="btnReset">
+                    <i class="fas fa-redo"></i>
+                    Reiniciar Histórico Local
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SDK Firebase v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+      // 🔥 CONFIG FIREBASE
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
+        authDomain: "fila-coordenacao.firebaseapp.com",
+        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
+        projectId: "fila-coordenacao",
+        storageBucket: "fila-coordenacao.firebasestorage.app",
+        messagingSenderId: "302987735020",
+        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+
+    <script>
+        class PainelAtendente {
+            constructor() {
+                this.senhasHistorico = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
+                this.pausado = false;
+                this.cursoSelecionado = "";
+                this.init();
+            }
+            
+            init() {
+                this.criarParticulas();
+                this.renderizarHistorico();
+                this.bindEvents();
+                this.atualizarStatus();
+            }
+            
+            criarParticulas() {
+                const particulas = document.getElementById('particulas');
+                for (let i = 0; i < 60; i++) {
+                    const particula = document.createElement('div');
+                    particula.className = 'particula';
+                    particula.style.left = Math.random() * 100 + '%';
+                    particula.style.animationDelay = Math.random() * 8 + 's';
+                    particula.style.animationDuration = (Math.random() * 4 + 5) + 's';
+                    particulas.appendChild(particula);
+                }
+            }
+            
+            bindEvents() {
+                document.getElementById('btnProx').addEventListener('click', () => this.proximaSenha());
+                document.getElementById('btnPausar').addEventListener('click', () => this.togglePausar());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetSistema());
+                document.getElementById('filtroCurso').addEventListener('change', (e) => {
+                    this.cursoSelecionado = e.target.value;
+                    this.atualizarStatus();
+                });
+            }
+
+            async proximaSenha() {
+                if (this.pausado) return;
+
+                const status = document.getElementById('status');
+                const curso = this.cursoSelecionado;
+
+                status.textContent = 'Buscando próxima senha na fila...';
+                status.style.color = '#4a5568';
+
+                try {
+                    // Referência à fila
+                    const filaRef = database.ref('fila');
+
+                    // Busca todos "aguardando" (ordenados por timestamp); filtro de curso é feito no cliente
+                    const snapshot = await filaRef
+                        .orderByChild('status')
+                        .equalTo('aguardando')
+                        .once('value'); // retorna todos que estão aguardando[web:21][web:33]
+
+                    const fila = [];
+                    snapshot.forEach(child => {
+                        const val = child.val();
+                        fila.push({ id: child.key, ...val });
+                    });
+
+                    // Filtra por curso (se algum curso estiver selecionado)
+                    const filaFiltrada = curso 
+                        ? fila.filter(item => item.curso === curso)
+                        : fila;
+
+                    if (filaFiltrada.length === 0) {
+                        document.getElementById('numeroSenha').textContent = '000000';
+                        document.getElementById('infoSenha').innerHTML = `
+                            <i class="fas fa-info-circle"></i> Nenhum aluno na fila${curso ? ' para este curso.' : '.'}
+                        `;
+                        status.textContent = 'Sem alunos na fila.';
+                        status.style.color = '#e53e3e';
+                        return;
+                    }
+
+                    // Pega o primeiro da fila (mais antigo pelo timestamp)
+                    filaFiltrada.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    const proximo = filaFiltrada[0];
+
+                    // Atualiza display
+                    this.mostrarSenha(proximo);
+
+                    // Atualiza status no Firebase para "atendendo"
+                    await database.ref('fila/' + proximo.id).update({
+                        status: 'atendendo',
+                        atendidoEm: Date.now()
+                    });[web:23][web:32]
+
+                    this.adicionarHistorico(proximo);
+                    this.atualizarStatus(true, proximo);
+
+                } catch (err) {
+                    console.error('Erro ao buscar próxima senha:', err);
+                    status.textContent = 'Erro ao buscar próxima senha.';
+                    status.style.color = '#e53e3e';
+                }
+            }
+
+            mostrarSenha(dados) {
+                const numero = document.getElementById('numeroSenha');
+                const info = document.getElementById('infoSenha');
+
+                const senha = dados.senha || '000000';
+                numero.textContent = senha;
+
+                info.innerHTML = `
+                    <i class="fas fa-user"></i> <strong>${dados.nome || ''}</strong><br>
+                    Matrícula: ${dados.matricula || ''}<br>
+                    Curso: ${dados.curso || ''}<br>
+                    ${dados.responsavel ? 'Responsável: ' + dados.responsavel + '<br>' : ''}
+                    ${dados.motivo ? 'Motivo: ' + dados.motivo : ''}
+                `;
+
+                // Animação de chamada
+                numero.style.animation = 'none';
+                numero.offsetHeight;
+                numero.style.animation = 'pulseSenha 0.6s infinite';
+                setTimeout(() => {
+                    numero.style.animation = 'pulseSenha 2s infinite';
+                }, 2000);
+            }
+            
+            adicionarHistorico(dados) {
+                const agora = new Date().toLocaleTimeString('pt-BR');
+                const entrada = {
+                    senha: dados.senha || '',
+                    nome: dados.nome || '',
+                    curso: dados.curso || '',
+                    hora: agora
+                };
+                this.senhasHistorico.unshift(entrada);
+                if (this.senhasHistorico.length > 10) {
+                    this.senhasHistorico = this.senhasHistorico.slice(0, 10);
+                }
+                localStorage.setItem('historicoSenhas', JSON.stringify(this.senhasHistorico));
+                this.renderizarHistorico();
+            }
+            
+            renderizarHistorico() {
+                const historico = document.getElementById('historico');
+                if (this.senhasHistorico.length === 0) {
+                    historico.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nenhuma senha atendida</div>';
+                    return;
+                }
+                historico.innerHTML = this.senhasHistorico.map(item => 
+                    `<div class="item-historico">
+                        <span><i class="fas fa-ticket-alt"></i> ${item.senha} - ${item.nome} (${item.curso})</span>
+                        <span style="color: #4a5568;">${item.hora}</span>
+                    </div>`
+                ).join('');
+            }
+            
+            togglePausar() {
+                this.pausado = !this.pausado;
+                const statusPausado = document.getElementById('statusPausado');
+                const btnPausar = document.getElementById('btnPausar');
+                
+                if (this.pausado) {
+                    statusPausado.style.display = 'block';
+                    btnPausar.innerHTML = '<i class="fas fa-play"></i> Retomar Atendimento';
+                } else {
+                    statusPausado.style.display = 'none';
+                    btnPausar.innerHTML = '<i class="fas fa-pause"></i> Pausar Atendimento';
+                }
+                this.atualizarStatus();
+            }
+            
+            resetSistema() {
+                if (confirm('Deseja limpar apenas o histórico local deste computador?')) {
+                    this.senhasHistorico = [];
+                    localStorage.removeItem('historicoSenhas');
+                    document.getElementById('numeroSenha').textContent = '000000';
+                    document.getElementById('infoSenha').innerHTML = '<i class="fas fa-clock"></i> Aguardando solicitação...';
+                    this.renderizarHistorico();
+                    this.atualizarStatus();
+                }
+            }
+            
+            atualizarStatus(temAtual = false, dados = null) {
+                const status = document.getElementById('status');
+                if (this.pausado) {
+                    status.textContent = 'Atendimento pausado';
+                    status.style.color = '#ed8936';
+                    return;
+                }
+
+                const curso = this.cursoSelecionado;
+                if (temAtual && dados) {
+                    status.textContent = `Atendendo ${dados.nome || ''} (${dados.senha || ''})${curso ? ' - Curso: ' + curso : ''}`;
+                    status.style.color = '#38a169';
+                } else {
+                    status.textContent = `Selecione um curso${curso ? ' (' + curso + ')' : ''} e clique em "Próxima Senha".`;
+                    status.style.color = '#4a5568';
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new PainelAtendente();
+        });
+    </script>
+</body>
+</html>
