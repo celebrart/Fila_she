@@ -310,6 +310,24 @@
         <div id="mensagem" class="mensagem"></div>
     </div>
 
+    <!-- SDK Firebase v8 (compatível com firebase.database) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+      // 🔥 CONFIG FIREBASE
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
+        authDomain: "fila-coordenacao.firebaseapp.com",
+        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
+        projectId: "fila-coordenacao",
+        storageBucket: "fila-coordenacao.firebasestorage.app",
+        messagingSenderId: "302987735020",
+        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+
     <script>
         // Partículas de fundo
         function criarParticulas() {
@@ -340,7 +358,7 @@
                 if (!this.value) gerarSenha();
             });
 
-            // Mostra/esconde seção Medicina com som (visual)
+            // Mostra/esconde seção Medicina
             cursoSelect.addEventListener('change', function() {
                 if (this.value === 'medicina') {
                     secaoMedicina.style.animation = 'none';
@@ -407,8 +425,34 @@
                     mostrarMensagem('Para Medicina, selecione responsável e motivo!', 'erro');
                     return;
                 }
-                mostrarMensagem('✅ Senha gerada com sucesso! Apresente-a no atendimento.', 'sucesso');
-                console.log('Dados:', Object.fromEntries(new FormData(form)));
+
+                // Monta objeto com os dados do aluno
+                const dados = {
+                    nome: document.getElementById('nome').value,
+                    matricula: document.getElementById('matricula').value,
+                    curso: document.getElementById('curso').value,
+                    responsavel: document.getElementById('responsavel').value || null,
+                    motivo: document.getElementById('motivo').value || null,
+                    senha: document.getElementById('senha').value,
+                    dataHora: new Date().toISOString()
+                };
+
+                // Garante que a senha exista
+                if (!dados.senha) {
+                    gerarSenha();
+                    dados.senha = document.getElementById('senha').value;
+                }
+
+                // Salva em "senhaAtual" no Realtime Database
+                database.ref('senhaAtual').set(dados)
+                    .then(() => {
+                        mostrarMensagem('✅ Senha gerada com sucesso! Apresente-a no atendimento.', 'sucesso');
+                        console.log('Dados enviados para o Firebase:', dados);
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao salvar no Firebase:', error);
+                        mostrarMensagem('❌ Erro ao gerar a senha. Chame o atendente.', 'erro');
+                    });
             });
 
             function mostrarMensagem(texto, tipo) {
