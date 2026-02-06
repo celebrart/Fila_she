@@ -18,7 +18,6 @@
             align-items: center; 
             justify-content: center; 
             padding: 20px;
-            overflow-x: hidden;
         }
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
@@ -28,447 +27,136 @@
         .container { 
             background: rgba(255,255,255,0.95); 
             backdrop-filter: blur(20px);
-            padding: 50px 40px; 
+            padding: 40px; 
             border-radius: 30px; 
             box-shadow: 0 30px 60px rgba(0,0,0,0.2);
             max-width: 550px; 
             width: 100%;
-            position: relative;
-            overflow: hidden;
             animation: slideUp 0.8s ease-out;
         }
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
-            animation: float 20s infinite linear;
-        }
-        @keyframes float {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        h1 { 
-            text-align: center; 
-            color: #2c3e50; 
-            margin-bottom: 40px; 
-            font-size: 32px; 
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .campo { 
-            margin-bottom: 25px; 
-            position: relative;
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .campo:nth-child(1) { animation-delay: 0.1s; }
-        .campo:nth-child(2) { animation-delay: 0.2s; }
-        .campo:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        label { 
-            display: block; 
-            margin-bottom: 10px; 
-            color: #4a5568; 
-            font-weight: 500;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-        input, select { 
-            width: 100%; 
-            padding: 16px 20px; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 15px; 
-            font-size: 16px; 
-            font-weight: 400;
-            background: rgba(255,255,255,0.8);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: #667eea; 
-            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
-            transform: translateY(-2px);
-            background: white;
-        }
-        .icone { 
-            position: absolute; 
-            right: 15px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            color: #a0aec0; 
-            font-size: 18px;
-            transition: color 0.3s;
-        }
-        input:focus + .icone, select:focus + .icone { color: #667eea; }
-        .secao-oculta { 
-            display: none; 
-            opacity: 0; 
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            margin: 25px 0; 
-            padding: 30px; 
-            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.05));
-            border-radius: 20px; 
-            border: 2px solid rgba(102,126,234,0.2);
-            box-shadow: 0 15px 35px rgba(102,126,234,0.15);
-        }
-        .secao-visivel { 
-            display: block !important; 
-            opacity: 1 !important; 
-            transform: translateY(0) scale(1) !important;
-            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        #senha { 
-            font-family: 'Courier New', monospace; 
-            font-size: 24px; 
-            font-weight: 700; 
-            text-align: center; 
-            letter-spacing: 4px;
-            color: #2d3748;
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        h1 { text-align: center; margin-bottom: 30px; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .campo { margin-bottom: 20px; position: relative; }
+        label { display: block; margin-bottom: 8px; color: #4a5568; font-weight: 500; font-size: 14px; }
+        input, select { width: 100%; padding: 14px 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; transition: all 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 15px rgba(102,126,234,0.2); }
+        .secao-oculta { display: none; margin: 20px 0; padding: 20px; background: rgba(102,126,234,0.05); border-radius: 15px; border: 1px dashed #667eea; }
+        .secao-visivel { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         button { 
-            width: 100%; 
-            padding: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            color: white; 
-            border: none; 
-            border-radius: 20px; 
-            font-size: 20px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
-            position: relative;
-            overflow: hidden;
+            width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-        button:hover::before { left: 100%; }
-        button:hover { 
-            transform: translateY(-5px) scale(1.02); 
-            box-shadow: 0 20px 40px rgba(102,126,234,0.6);
-        }
-        button:active { transform: translateY(-3px) scale(1.01); }
-        .mensagem { 
-            margin-top: 25px; 
-            padding: 20px; 
-            border-radius: 15px; 
-            text-align: center; 
-            font-weight: 500;
-            font-size: 16px;
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-        .mensagem.show { transform: translateY(0); opacity: 1; }
-        .mensagem.sucesso { 
-            background: linear-gradient(135deg, #d4edda, #c6f6d5); 
-            color: #22543d; 
-            border: 2px solid #9ae6b4;
-            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
-        }
-        .mensagem.erro { 
-            background: linear-gradient(135deg, #fed7d7, #feb2b2); 
-            color: #742a2a; 
-            border: 2px solid #fc8181;
-            box-shadow: 0 10px 30px rgba(245, 101, 101, 0.3);
-        }
-        .particulas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        .particula {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 50%;
-            animation: floatUp 6s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1); opacity: 0; }
-        }
-        @media (max-width: 600px) { 
-            .container { padding: 40px 25px; } 
-            h1 { font-size: 26px; }
-        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(102,126,234,0.4); }
+        .mensagem { margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center; display: none; }
+        .mensagem.show { display: block; }
+        .sucesso { background: #d4edda; color: #155724; }
+        .erro { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <div class="particulas" id="particulas"></div>
-    
     <div class="container">
-        <h1><i class="fas fa-user-md"></i> Gerador de Senha</h1>
+        <h1><i class="fas fa-id-badge"></i> Pegar Senha</h1>
         <form id="formSenha">
             <div class="campo">
-                <label for="nome"><i class="fas fa-user"></i> Nome Completo *</label>
+                <label>Nome Completo *</label>
                 <input type="text" id="nome" required>
-                <i class="fas fa-user icone"></i>
             </div>
             <div class="campo">
-                <label for="matricula"><i class="fas fa-id-card"></i> Matrícula *</label>
+                <label>Matrícula *</label>
                 <input type="text" id="matricula" required>
-                <i class="fas fa-id-card icone"></i>
             </div>
             <div class="campo">
-                <label for="curso"><i class="fas fa-graduation-cap"></i> Curso *</label>
+                <label>Curso *</label>
                 <select id="curso" required>
-                    <option value="">Selecione o curso</option>
+                    <option value="">Selecione...</option>
                     <option value="medicina">🩺 Medicina</option>
                     <option value="enfermagem">🩺 Enfermagem</option>
-                    <option value="odontologia">🦷 Odontologia</option>
-                    <option value="fisioterapia">💪 Fisioterapia</option>
-                    <option value="nutricao">🥗 Nutrição</option>
-                    <option value="psicologia">🧠 Psicologia</option>
                     <option value="direito">⚖️ Direito</option>
                     <option value="engenharia">🔧 Engenharia</option>
-                    <option value="administracao">📊 Administração</option>
-                    <option value="contabilidade">💰 Contabilidade</option>
-                    <option value="pedagogia">📚 Pedagogia</option>
                     <option value="outros">📖 Outros</option>
                 </select>
-                <i class="fas fa-graduation-cap icone"></i>
             </div>
             
             <div id="secaoMedicina" class="secao-oculta">
-                <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;"><i class="fas fa-stethoscope"></i> Atendimento Medicina</h3>
                 <div class="campo">
-                    <label for="responsavel"><i class="fas fa-user-nurse"></i> Responsável *</label>
-                    <select id="responsavel" required disabled>
-                        <option value="">Escolha o responsável</option>
-                        <option value="marcele">👩‍⚕️ Marcele</option>
-                        <option value="emmanuelle">👩‍⚕️ Emmanuelle</option>
-                        <option value="leydiane">👩‍⚕️ Leydiane</option>
+                    <label>Responsável *</label>
+                    <select id="responsavel">
+                        <option value="">Escolha...</option>
+                        <option value="Marcele">👩‍⚕️ Marcele</option>
+                        <option value="Emmanuelle">👩‍⚕️ Emmanuelle</option>
+                        <option value="Leydiane">👩‍⚕️ Leydiane</option>
                     </select>
-                    <i class="fas fa-user-nurse icone"></i>
                 </div>
                 <div class="campo">
-                    <label for="motivo"><i class="fas fa-clipboard-list"></i> Motivo *</label>
-                    <select id="motivo" required disabled>
-                        <option value="">Selecione o assunto</option>
-                        <option value="dispensa">📄 Dispensa</option>
-                        <option value="internato">🏥 Internato</option>
-                        <option value="duvidas">❓ Dúvidas</option>
-                        <option value="alocacao">📍 Alocação</option>
-                        <option value="salas">🚪 Salas</option>
-                        <option value="coordenacao">👩‍💼 Coordenação</option>
-                        <option value="outros">📝 Outros</option>
+                    <label>Motivo *</label>
+                    <select id="motivo">
+                        <option value="">Selecione...</option>
+                        <option value="Dispensa">📄 Dispensa</option>
+                        <option value="Internato">🏥 Internato</option>
+                        <option value="Dúvidas">❓ Dúvidas</option>
                     </select>
-                    <i class="fas fa-clipboard-list icone"></i>
                 </div>
             </div>
-            
-            <div class="campo">
-                <label for="senha"><i class="fas fa-key"></i> Sua Senha:</label>
-                <input type="text" id="senha" readonly placeholder="Clique para gerar">
-                <i class="fas fa-key icone"></i>
-            </div>
-            
-            <button type="submit">
-                <i class="fas fa-check-circle"></i> Confirmar e Gerar Senha
-            </button>
+
+            <button type="submit" id="btnGerar">Confirmar e Gerar Senha</button>
         </form>
         <div id="mensagem" class="mensagem"></div>
     </div>
 
-    <!-- SDK Firebase v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
-        authDomain: "fila-coordenacao.firebaseapp.com",
-        databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
-        projectId: "fila-coordenacao",
-        storageBucket: "fila-coordenacao.firebasestorage.app",
-        messagingSenderId: "302987735020",
-        appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const database = firebase.database();
-    </script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-Jymhub4TY_gsIAfYnHBw6VoRDvHdfmY",
+            authDomain: "fila-coordenacao.firebaseapp.com",
+            databaseURL: "https://fila-coordenacao-default-rtdb.firebaseio.com",
+            projectId: "fila-coordenacao",
+            storageBucket: "fila-coordenacao.firebasestorage.app",
+            messagingSenderId: "302987735020",
+            appId: "1:302987735020:web:af93f41a0210c98fd29ac9"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    <script>
-        function criarParticulas() {
-            const particulas = document.getElementById('particulas');
-            for (let i = 0; i < 50; i++) {
-                const particula = document.createElement('div');
-                particula.className = 'particula';
-                particula.style.left = Math.random() * 100 + '%';
-                particula.style.animationDelay = Math.random() * 6 + 's';
-                particula.style.animationDuration = (Math.random() * 3 + 4) + 's';
-                particulas.appendChild(particula);
+        const cursoSelect = document.getElementById('curso');
+        const secaoMedicina = document.getElementById('secaoMedicina');
+
+        cursoSelect.addEventListener('change', () => {
+            if(cursoSelect.value === 'medicina') {
+                secaoMedicina.classList.add('secao-visivel');
+            } else {
+                secaoMedicina.classList.remove('secao-visivel');
             }
-        }
+        });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            criarParticulas();
+        document.getElementById('formSenha').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const cursoSelect = document.getElementById('curso');
-            const responsavelSelect = document.getElementById('responsavel');
-            const motivoSelect = document.getElementById('motivo');
-            const secaoMedicina = document.getElementById('secaoMedicina');
-            const senhaInput = document.getElementById('senha');
-            const form = document.getElementById('formSenha');
-            const mensagem = document.getElementById('mensagem');
+            const cursoVal = cursoSelect.value;
+            const prefixo = cursoVal.substring(0,3).toUpperCase();
+            const numAleatorio = Math.floor(100 + Math.random() * 899);
+            const senhaGerada = `${prefixo}-${numAleatorio}`;
 
-            senhaInput.addEventListener('focus', function() {
-                if (!this.value) gerarSenha();
+            const dados = {
+                nome: document.getElementById('nome').value,
+                matricula: document.getElementById('matricula').value,
+                curso: cursoVal,
+                responsavel: document.getElementById('responsavel').value || "Geral",
+                motivo: document.getElementById('motivo').value || "Atendimento",
+                senha: senhaGerada,
+                status: 'aguardando',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            database.ref('fila').push(dados).then(() => {
+                const msg = document.getElementById('mensagem');
+                msg.textContent = `✅ Senha ${senhaGerada} gerada com sucesso!`;
+                msg.className = "mensagem sucesso show";
+                this.reset();
+                secaoMedicina.classList.remove('secao-visivel');
+                setTimeout(() => msg.classList.remove('show'), 6000);
             });
-
-            cursoSelect.addEventListener('change', function() {
-                if (this.value === 'medicina') {
-                    secaoMedicina.style.animation = 'none';
-                    secaoMedicina.offsetHeight;
-                    secaoMedicina.style.animation = 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-                    secaoMedicina.classList.remove('secao-oculta');
-                    secaoMedicina.classList.add('secao-visivel');
-                    responsavelSelect.disabled = false;
-                    gerarSenhaAnimada();
-                } else {
-                    secaoMedicina.classList.remove('secao-visivel');
-                    secaoMedicina.classList.add('secao-oculta');
-                    responsavelSelect.disabled = true;
-                    motivoSelect.disabled = true;
-                    limparSelecoes();
-                }
-            });
-
-            responsavelSelect.addEventListener('change', function() {
-                if (this.value) {
-                    motivoSelect.disabled = false;
-                    gerarSenhaAnimada();
-                } else {
-                    motivoSelect.disabled = true;
-                    limparMotivo();
-                }
-            });
-
-            function gerarSenhaAnimada() {
-                senhaInput.style.animation = 'none';
-                senhaInput.offsetHeight;
-                senhaInput.value = '';
-                const senha = gerarNumeroSenha();
-                let i = 0;
-                const digitar = setInterval(() => {
-                    senhaInput.value = senha.toString().slice(0, i);
-                    i++;
-                    if (i > senha.toString().length) {
-                        clearInterval(digitar);
-                        senhaInput.style.animation = 'pulse 1s infinite';
-                    }
-                }, 100);
-            }
-
-            function gerarNumeroSenha() {
-                return Math.floor(100000 + Math.random() * 900000);
-            }
-
-            function gerarSenha() {
-                const senha = gerarNumeroSenha();
-                senhaInput.value = senha;
-            }
-
-            function limparSelecoes() {
-                responsavelSelect.value = '';
-                motivoSelect.value = '';
-                senhaInput.value = '';
-            }
-
-            function limparMotivo() {
-                motivoSelect.value = '';
-                senhaInput.value = '';
-            }
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (cursoSelect.value === 'medicina' && (!responsavelSelect.value || !motivoSelect.value)) {
-                    mostrarMensagem('Para Medicina, selecione responsável e motivo!', 'erro');
-                    return;
-                }
-
-                if (!senhaInput.value) gerarSenha();
-
-                const dados = {
-                    nome: document.getElementById('nome').value,
-                    matricula: document.getElementById('matricula').value,
-                    curso: document.getElementById('curso').value,
-                    responsavel: document.getElementById('responsavel').value || null,
-                    motivo: document.getElementById('motivo').value || null,
-                    senha: document.getElementById('senha').value,
-                    status: 'aguardando',
-                    timestamp: Date.now()
-                };
-
-                database.ref('fila').push(dados)  // cada aluno vira um item na fila[web:21][web:32]
-                    .then(() => {
-                        mostrarMensagem('✅ Senha gerada com sucesso! Apresente-a no atendimento.', 'sucesso');
-                        console.log('Dados enviados para a fila:', dados);
-                    })
-                    .catch((error) => {
-                        console.error('Erro ao salvar no Firebase:', error);
-                        mostrarMensagem('❌ Erro ao gerar a senha. Chame o atendente.', 'erro');
-                    });
-            });
-
-            function mostrarMensagem(texto, tipo) {
-                mensagem.textContent = texto;
-                mensagem.className = `mensagem ${tipo}`;
-                setTimeout(() => mensagem.classList.add('show'), 10);
-                setTimeout(() => {
-                    mensagem.classList.remove('show');
-                    setTimeout(() => mensagem.className = 'mensagem', 400);
-                }, 4000);
-            }
-
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                }
-                #senha:focus { animation: pulse 0.6s infinite; }
-            `;
-            document.head.appendChild(style);
         });
     </script>
 </body>
